@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Money</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1 class="title">💰 My Money</h1>
+
+<!-- BALANCE -->
+<div class="balance-box">
+  <h2>Balance: ₹ <span id="balance">0</span></h2>
+</div>
+
+<!-- FORM -->
+<div class="form">
+  <input type="text" id="desc" placeholder="Description">
+  <input type="number" id="amount" placeholder="Amount">
+
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
+
+  <select id="source">
+    <option>Salary</option>
+    <option>Business</option>
+    <option>Freelance</option>
+    <option>Stock</option>
+  </select>
+
+  <button onclick="addTransaction()">Add</button>
+</div>
+
+<!-- LIST -->
+<h3>Transactions</h3>
+<ul id="list"></ul>
+
+<script src="script.js"></script>
+
+</body>
+</html>
