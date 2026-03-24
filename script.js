@@ -56,3 +56,23 @@ function deleteItem(index) {
 }
 
 updateUI();
+function login() {
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
+
+  if (user === "admin" && pass === "1234") {
+    localStorage.setItem("loggedIn", true);
+    showApp();
+  } else {
+    alert("Wrong login");
+  }
+}
+
+function showApp() {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+if (localStorage.getItem("loggedIn")) {
+  showApp();
+}
