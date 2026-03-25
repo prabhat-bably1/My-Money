@@ -31,8 +31,7 @@ th,td{padding:10px;border-bottom:1px solid #e2e8f0}
 <div class="container" id="app"></div>
 <script>
 let user = localStorage.getItem('user');
-let data = JSON.parse(localStorage.getItem('money-data'))||[];
-
+let data = [];
 function showAuth(){
  app.innerHTML=`<div class='card'>
  <h2>Welcome</h2>
@@ -89,12 +88,16 @@ function renderUI(){
 function add(){
  const t={id:Date.now(),desc:desc.value,amount:+amount.value,type:type.value,category:category.value};
  if(!t.desc||!t.amount) return alert('Fill all');
- data.push(t);save();render();
+ saveToDB(t);
 }
 
-function del(id){data=data.filter(x=>x.id!==id);save();render();}
-function save(){localStorage.setItem('money-data',JSON.stringify(data));}
-
+function del(id){
+  deleteFromDB(id);
+}
+function save(){
+  // Firebase me save hoga
+  data.forEach(item => saveToDB(item));
+}
 let chart;
 function render(){
  let inc=0,exp=0;
@@ -131,7 +134,12 @@ function exportData(){
  a.click();
 }
 
-if(!user) showAuth(); else init();
+if(!user) {
+  showAuth();
+} else {
+  init();
+  loadData(); // 🔥 IMPORTANT
+}
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -150,7 +158,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 function saveToDB(data){
-  db.collection("transactions").add(data);
+  db.collection("transactions").doc(data.id.toString()).set(data);
 }
 
 function loadData(){
