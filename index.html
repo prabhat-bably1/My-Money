@@ -4,149 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Money Ultimate</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#dbeafe,#f0f9ff);color:#0f172a}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px;background:#ffffff;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
-.container{padding:20px;max-width:1100px;margin:auto}
-.card{background:#fff;padding:20px;border-radius:16px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
-.row{display:flex;flex-wrap:wrap;gap:10px}
-input,select{padding:12px;border-radius:10px;border:1px solid #cbd5e1}
-button{padding:12px 18px;border-radius:10px;border:none;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
-button:hover{opacity:0.9}
+body{margin:0;font-family:sans-serif;background:#f5f7fb}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#2563eb;color:#fff}
+.container{padding:15px;max-width:1000px;margin:auto}
+.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input,select{padding:10px;border-radius:8px;border:1px solid #ccc}
+button{padding:10px 15px;border:none;border-radius:8px;background:#2563eb;color:#fff;cursor:pointer}
 table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:10px;border-bottom:1px solid #e2e8f0}
-.income{color:#16a34a;font-weight:600}
-.expense{color:#dc2626;font-weight:600}
-.balance{font-size:28px;font-weight:700}
-.summary{display:flex;gap:20px}
-.summary div{flex:1;padding:12px;border-radius:12px;background:#f1f5f9;text-align:center}
+td,th{padding:8px;border-bottom:1px solid #ddd}
+.balance{font-size:24px;font-weight:bold}
+.income{color:green}
+.expense{color:red}
 </style>
 </head>
+
 <body>
+
 <header>
-<div>🚀 My Money Ultimate</div>
+<div>💰 My Money</div>
 <div id="userBox"></div>
 </header>
+
 <div class="container" id="app"></div>
-<script>
-let user = localStorage.getItem('user');
-let data = [];
-function showAuth(){
- app.innerHTML=`<div class='card'>
- <h2>Welcome</h2>
- <input id='username' placeholder='Enter name'>
- <button onclick='login()'>Start</button>
- </div>`;
-}
 
-function login(){
- if(!username.value) return alert('Enter name');
- localStorage.setItem('user',username.value);
- user=username.value;init();
-}
-
-function logout(){localStorage.removeItem('user');location.reload();}
-
-function init(){
- userBox.innerHTML=`👤 ${user} <button onclick='logout()'>Logout</button>`;
- renderUI();render();
-}
-
-function renderUI(){
- app.innerHTML=`
- <div class='card'>
- <h3>Add Transaction</h3>
- <div class='row'>
- <input id='desc' placeholder='Description'>
- <input id='amount' type='number' placeholder='Amount'>
- <select id='type'><option value='income'>Income</option><option value='expense'>Expense</option></select>
- <select id='category'><option>General</option><option>Food</option><option>Salary</option><option>Shopping</option></select>
- <button onclick='add()'>Add</button>
- </div>
- </div>
-
- <div class='card'>
- <div class='balance'>₹<span id='bal'>0</span></div>
- <div class='summary'>
- <div>Income<br><b id='inc'>0</b></div>
- <div>Expense<br><b id='exp'>0</b></div>
- </div>
- <canvas id='chart'></canvas>
- </div>
-
- <div class='card'>
- <h3>Transactions</h3>
- <button onclick='exportData()'>Export JSON</button>
- <table>
- <thead><tr><th>Desc</th><th>₹</th><th>Type</th><th>Cat</th><th></th></tr></thead>
- <tbody id='list'></tbody>
- </table>
- </div>`;
-}
-
-function add(){
- const t={id:Date.now(),desc:desc.value,amount:+amount.value,type:type.value,category:category.value};
- if(!t.desc||!t.amount) return alert('Fill all');
- saveToDB(t);
-}
-
-function del(id){
-  deleteFromDB(id);
-}
-function save(){
-  // Firebase me save hoga
-  data.forEach(item => saveToDB(item));
-}
-let chart;
-function render(){
- let inc=0,exp=0;
- list.innerHTML='';
- data.forEach(x=>{
- list.innerHTML+=`<tr>
- <td>${x.desc}</td>
- <td>₹${x.amount}</td>
- <td class='${x.type}'>${x.type}</td>
- <td>${x.category}</td>
- <td><button onclick='del(${x.id})'>❌</button></td>
- </tr>`;
- x.type==='income'?inc+=x.amount:exp+=x.amount;
- });
- bal.innerText=inc-exp;
- incEl=document.getElementById('inc');expEl=document.getElementById('exp');
- incEl.innerText=inc;expEl.innerText=exp;
- drawChart(inc,exp);
-}
-
-function drawChart(i,e){
- if(chart) chart.destroy();
- chart=new Chart(document.getElementById('chart'),{
- type:'bar',
- data:{labels:['Income','Expense'],datasets:[{data:[i,e]}]}
- });
-}
-
-function exportData(){
- const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download='money-data.json';
- a.click();
-}
-
-if(!user) {
-  showAuth();
-} else {
-  init();
-  loadData(); // 🔥 IMPORTANT
-}
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
+// 🔥 Firebase Config (YOURS)
 const firebaseConfig = {
-  apiKey: "AIzaSyCx1EaNBZanLA5YDzWZcGKsMQ0w0UqMuDU",
+  apiKey: "AIzaSyCx1EaNBZanLA5YDzWZcGKsMQOw0UqMuDU",
   authDomain: "my-money-app-28804.firebaseapp.com",
   projectId: "my-money-app-28804",
   storageBucket: "my-money-app-28804.appspot.com",
@@ -157,24 +50,173 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-function saveToDB(data){
-  db.collection("transactions").doc(data.id.toString()).set(data);
+// =====================
+
+let user = localStorage.getItem("user");
+let data = [];
+let chart;
+
+// ===================== LOGIN
+
+function showAuth(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>Welcome</h2>
+      <input id="username" placeholder="Enter name">
+      <button onclick="login()">Start</button>
+    </div>
+  `;
 }
+
+function login(){
+  if(!username.value) return alert("Enter name");
+  localStorage.setItem("user", username.value);
+  user = username.value;
+  init();
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+// ===================== INIT
+
+function init(){
+  userBox.innerHTML = `👤 ${user} <button onclick="logout()">Logout</button>`;
+  renderUI();
+  loadData(); // 🔥 important
+}
+
+// ===================== UI
+
+function renderUI(){
+  app.innerHTML = `
+  <div class="card">
+    <h3>Add Transaction</h3>
+    <div class="row">
+      <input id="desc" placeholder="Description">
+      <input id="amount" type="number" placeholder="Amount">
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <select id="category">
+        <option>General</option>
+        <option>Food</option>
+        <option>Salary</option>
+        <option>Shopping</option>
+      </select>
+      <button onclick="add()">Add</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="balance">Balance: ₹<span id="bal">0</span></div>
+    <div>Income: ₹<span id="inc">0</span></div>
+    <div>Expense: ₹<span id="exp">0</span></div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Transactions</h3>
+    <table>
+      <thead>
+        <tr><th>Desc</th><th>₹</th><th>Type</th><th>Cat</th><th></th></tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+  `;
+}
+
+// ===================== ADD
+
+function add(){
+  const t = {
+    id: Date.now().toString(),
+    desc: desc.value,
+    amount: +amount.value,
+    type: type.value,
+    category: category.value
+  };
+
+  if(!t.desc || !t.amount) return alert("Fill all");
+
+  db.collection("transactions").doc(t.id).set(t);
+}
+
+// ===================== LOAD REALTIME
 
 function loadData(){
   db.collection("transactions").onSnapshot(snapshot=>{
     data = [];
     snapshot.forEach(doc=>{
-      data.push({...doc.data(), id: doc.id});
+      data.push(doc.data());
     });
     render();
   });
 }
 
-function deleteFromDB(id){
+// ===================== DELETE
+
+function del(id){
   db.collection("transactions").doc(id).delete();
 }
+
+// ===================== RENDER
+
+function render(){
+  let inc=0, exp=0;
+  list.innerHTML="";
+
+  data.forEach(x=>{
+    list.innerHTML += `
+      <tr>
+        <td>${x.desc}</td>
+        <td>${x.amount}</td>
+        <td class="${x.type}">${x.type}</td>
+        <td>${x.category}</td>
+        <td><button onclick="del('${x.id}')">❌</button></td>
+      </tr>
+    `;
+
+    if(x.type=="income") inc+=x.amount;
+    else exp+=x.amount;
+  });
+
+  bal.innerText = inc-exp;
+  incEl = document.getElementById("inc");
+  expEl = document.getElementById("exp");
+  incEl.innerText = inc;
+  expEl.innerText = exp;
+
+  drawChart(inc, exp);
+}
+
+// ===================== CHART
+
+function drawChart(i,e){
+  if(chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "bar",
+    data: {
+      labels: ["Income","Expense"],
+      datasets: [{data:[i,e]}]
+    }
+  });
+}
+
+// ===================== START
+
+if(!user){
+  showAuth();
+}else{
+  init();
+}
+
 </script>
-</script>
+
 </body>
 </html>
