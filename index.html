@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Money Pro</title>
+<title>My Money PRO</title>
 
+<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Razorpay -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <!-- Firebase -->
@@ -14,11 +17,11 @@
 
 <style>
 body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
-header{display:flex;justify-content:space-between;padding:15px;background:#111827}
+header{display:flex;justify-content:space-between;padding:15px;background:#020617}
 .container{padding:15px}
-.card{background:#1f2937;padding:15px;border-radius:12px;margin-bottom:15px}
-input,select{padding:10px;margin:5px;border-radius:8px;border:none}
-button{padding:10px 15px;border:none;border-radius:8px;background:#22c55e;color:#000;font-weight:bold}
+.card{background:#1e293b;padding:15px;border-radius:12px;margin-bottom:15px}
+input,select{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
+button{padding:10px;border:none;border-radius:8px;background:#22c55e;color:#000;font-weight:bold;margin-top:5px}
 button.pro{background:#f59e0b}
 .balance{font-size:28px;font-weight:bold}
 </style>
@@ -32,29 +35,27 @@ button.pro{background:#f59e0b}
 </header>
 
 <div class="container" id="app"></div>
-<!-- Firebase CDN -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <script>
-// 🔥 FIREBASE CONFIG (TUHARA READY)
+
+// 🔥 FIREBASE CONFIG (YAHAN APNA DALNA)
 const firebaseConfig = {
-  apiKey: "AIzaSyCx1EaNBZanLA5YDzWzGcKsMQowOUqMuDU",
-  authDomain: "my-money-app-28804.firebaseapp.com",
-  projectId: "my-money-app-28804",
-  storageBucket: "my-money-app-28804.appspot.com",
-  messagingSenderId: "317573257074",
-  appId: "1:317573257074:web:5b70bc7e0bad8633dcefeb"
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_AUTH_DOMAIN",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_BUCKET",
+  messagingSenderId: "PASTE_MSG_ID",
+  appId: "PASTE_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-};
 
+// DATA
 let user = localStorage.getItem("user");
 let data = [];
-let pro = localStorage.getItem("pro");
 
-// 🔐 LOGIN
+// LOGIN UI
 function showLogin(){
 app.innerHTML = `
 <div class="card">
@@ -64,20 +65,21 @@ app.innerHTML = `
 </div>`;
 }
 
+// LOGIN
 function login(){
 if(!name.value) return alert("Enter name");
-localStorage.setItem("user",name.value);
-user=name.value;
-init();
+localStorage.setItem("user", name.value);
+location.reload();
 }
 
-// 🚀 INIT
+// INIT
 function init(){
 userBox.innerHTML = `👤 ${user} <button onclick="logout()">Logout</button>`;
 renderUI();
 loadData();
 }
 
+// LOGOUT
 function logout(){
 localStorage.clear();
 location.reload();
@@ -119,10 +121,10 @@ app.innerHTML = `
 // ADD DATA
 function add(){
 const t={
- id:Date.now(),
- desc:desc.value,
- amount:+amount.value,
- type:type.value
+id:Date.now(),
+desc:desc.value,
+amount:+amount.value,
+type:type.value
 };
 
 if(!t.desc || !t.amount) return alert("Fill all");
@@ -131,7 +133,7 @@ db.collection("users").doc(user)
 .collection("data").doc(t.id.toString()).set(t);
 }
 
-// LOAD DATA
+// LOAD
 function loadData(){
 db.collection("users").doc(user)
 .collection("data")
@@ -151,7 +153,7 @@ db.collection("users").doc(user)
 // RENDER
 let chart;
 function render(){
-let inc=0,exp=0;
+let inc=0, exp=0;
 list.innerHTML="";
 
 data.forEach(x=>{
@@ -163,44 +165,48 @@ list.innerHTML+=`
 <td><button onclick="del(${x.id})">❌</button></td>
 </tr>
 `;
-x.type==="income"?inc+=x.amount:exp+=x.amount;
+
+x.type=="income"?inc+=x.amount:exp+=x.amount;
 });
 
-bal.innerText=inc-exp;
+bal.innerText = inc-exp;
 
 if(chart) chart.destroy();
 chart=new Chart(document.getElementById("chart"),{
-type:'bar',
-data:{labels:['Income','Expense'],datasets:[{data:[inc,exp]}]}
+type:"bar",
+data:{
+labels:["Income","Expense"],
+datasets:[{data:[inc,exp]}]
+}
 });
 }
 
-// 💰 RAZORPAY PAYMENT
+// 💳 RAZORPAY (KEY CHANGE KARNA)
 function buyPro(){
 var options = {
- key: "YOUR_RAZORPAY_KEY", // 🔴 CHANGE THIS
- amount: 49900,
- currency: "INR",
- name: "My Money Pro",
- handler: function (){
-   alert("Payment Success ✅");
-   localStorage.setItem("pro","yes");
-   location.reload();
- }
+key: "PASTE_RAZORPAY_KEY",
+amount: 49900,
+currency: "INR",
+name: "My Money PRO",
+handler: function (){
+alert("Payment Success ✅");
+localStorage.setItem("pro","yes");
+location.reload();
+}
 };
 new Razorpay(options).open();
 }
 
-// 🔒 PRO FEATURE
+// PRO FEATURE
 function exportData(){
-if(localStorage.getItem("pro")!=="yes"){
+if(localStorage.getItem("pro")!="yes"){
 alert("Buy Pro First 🔒");
 return;
 }
-const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
-const a=document.createElement('a');
+const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+const a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
-a.download='data.json';
+a.download="data.json";
 a.click();
 }
 
