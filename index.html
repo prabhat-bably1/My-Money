@@ -3,30 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Money Ultimate</title>
+<title>My Money PRO</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{margin:0;font-family:sans-serif;background:#f5f7fb}
-header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#2563eb;color:#fff}
+body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
+header{display:flex;justify-content:space-between;padding:15px;background:#1e293b}
 .container{padding:15px;max-width:1000px;margin:auto}
-.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-input,select{padding:10px;border-radius:8px;border:1px solid #ccc}
-button{padding:10px 15px;border:none;border-radius:8px;background:#2563eb;color:#fff;cursor:pointer}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-td,th{padding:8px;border-bottom:1px solid #ddd}
-.balance{font-size:24px;font-weight:bold}
-.income{color:green}
-.expense{color:red}
+.card{background:#1e293b;padding:15px;border-radius:12px;margin-bottom:15px}
+input,select{padding:10px;border-radius:8px;border:none}
+button{padding:10px;border:none;border-radius:8px;background:#22c55e;color:#000;cursor:pointer}
+table{width:100%;margin-top:10px}
+.balance{font-size:24px}
 </style>
 </head>
 
 <body>
 
 <header>
-<div>💰 My Money</div>
+<div>💰 My Money PRO</div>
 <div id="userBox"></div>
 </header>
 
@@ -35,185 +31,164 @@ td,th{padding:8px;border-bottom:1px solid #ddd}
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script>
-// 🔥 Firebase Config (YOURS)
+
+// 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCx1EaNBZanLA5YDzWZcGKsMQOw0UqMuDU",
   authDomain: "my-money-app-28804.firebaseapp.com",
   projectId: "my-money-app-28804",
-  storageBucket: "my-money-app-28804.appspot.com",
-  messagingSenderId: "317573257074",
-  appId: "1:317573257074:web:5b70bc7e0bad8633dcefeb"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// =====================
-
-let user = localStorage.getItem("user");
-let data = [];
+let user;
+let data=[];
 let chart;
 
-// ===================== LOGIN
+// ================= LOGIN
 
-function showAuth(){
+function showLogin(){
   app.innerHTML = `
     <div class="card">
-      <h2>Welcome</h2>
-      <input id="username" placeholder="Enter name">
-      <button onclick="login()">Start</button>
+      <h2>Login</h2>
+      <button onclick="googleLogin()">Login with Google</button>
     </div>
   `;
 }
 
-function login(){
-  if(!username.value) return alert("Enter name");
-  localStorage.setItem("user", username.value);
-  user = username.value;
-  init();
+function googleLogin(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
 }
 
 function logout(){
-  localStorage.removeItem("user");
-  location.reload();
+  auth.signOut();
 }
 
-// ===================== INIT
+// ================= AUTH STATE
+
+auth.onAuthStateChanged(u=>{
+  if(u){
+    user = u;
+    init();
+  }else{
+    showLogin();
+  }
+});
+
+// ================= INIT
 
 function init(){
-  userBox.innerHTML = `👤 ${user} <button onclick="logout()">Logout</button>`;
+  userBox.innerHTML = `👤 ${user.displayName} <button onclick="logout()">Logout</button>`;
   renderUI();
-  loadData(); // 🔥 important
+  loadData();
 }
 
-// ===================== UI
+// ================= UI
 
 function renderUI(){
   app.innerHTML = `
   <div class="card">
-    <h3>Add Transaction</h3>
-    <div class="row">
-      <input id="desc" placeholder="Description">
-      <input id="amount" type="number" placeholder="Amount">
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
-      <select id="category">
-        <option>General</option>
-        <option>Food</option>
-        <option>Salary</option>
-        <option>Shopping</option>
-      </select>
-      <button onclick="add()">Add</button>
-    </div>
+    <h3>Add</h3>
+    <input id="desc" placeholder="Desc">
+    <input id="amount" type="number">
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+    <button onclick="add()">Add</button>
   </div>
 
   <div class="card">
-    <div class="balance">Balance: ₹<span id="bal">0</span></div>
+    <div class="balance">₹<span id="bal">0</span></div>
     <div>Income: ₹<span id="inc">0</span></div>
     <div>Expense: ₹<span id="exp">0</span></div>
     <canvas id="chart"></canvas>
   </div>
 
   <div class="card">
-    <h3>Transactions</h3>
     <table>
-      <thead>
-        <tr><th>Desc</th><th>₹</th><th>Type</th><th>Cat</th><th></th></tr>
-      </thead>
       <tbody id="list"></tbody>
     </table>
   </div>
   `;
 }
 
-// ===================== ADD
+// ================= ADD
 
 function add(){
-  const t = {
-    id: Date.now().toString(),
-    desc: desc.value,
-    amount: +amount.value,
-    type: type.value,
-    category: category.value
+  const t={
+    id:Date.now().toString(),
+    uid:user.uid,
+    desc:desc.value,
+    amount:+amount.value,
+    type:type.value
   };
-
-  if(!t.desc || !t.amount) return alert("Fill all");
 
   db.collection("transactions").doc(t.id).set(t);
 }
 
-// ===================== LOAD REALTIME
+// ================= LOAD (USER DATA ONLY)
 
 function loadData(){
-  db.collection("transactions").onSnapshot(snapshot=>{
-    data = [];
-    snapshot.forEach(doc=>{
-      data.push(doc.data());
+  db.collection("transactions")
+    .where("uid","==",user.uid)
+    .onSnapshot(snap=>{
+      data=[];
+      snap.forEach(doc=>data.push(doc.data()));
+      render();
     });
-    render();
-  });
 }
 
-// ===================== DELETE
+// ================= DELETE
 
 function del(id){
   db.collection("transactions").doc(id).delete();
 }
 
-// ===================== RENDER
+// ================= RENDER
 
 function render(){
-  let inc=0, exp=0;
+  let inc=0,exp=0;
   list.innerHTML="";
 
   data.forEach(x=>{
-    list.innerHTML += `
+    list.innerHTML+=`
       <tr>
         <td>${x.desc}</td>
         <td>${x.amount}</td>
-        <td class="${x.type}">${x.type}</td>
-        <td>${x.category}</td>
+        <td>${x.type}</td>
         <td><button onclick="del('${x.id}')">❌</button></td>
       </tr>
     `;
 
-    if(x.type=="income") inc+=x.amount;
-    else exp+=x.amount;
+    x.type=="income"?inc+=x.amount:exp+=x.amount;
   });
 
-  bal.innerText = inc-exp;
-  incEl = document.getElementById("inc");
-  expEl = document.getElementById("exp");
-  incEl.innerText = inc;
-  expEl.innerText = exp;
+  bal.innerText=inc-exp;
+  inc.innerText=inc;
+  exp.innerText=exp;
 
-  drawChart(inc, exp);
+  drawChart(inc,exp);
 }
 
-// ===================== CHART
+// ================= CHART
 
 function drawChart(i,e){
   if(chart) chart.destroy();
 
-  chart = new Chart(document.getElementById("chart"), {
-    type: "bar",
-    data: {
-      labels: ["Income","Expense"],
-      datasets: [{data:[i,e]}]
+  chart=new Chart(document.getElementById("chart"),{
+    type:"doughnut",
+    data:{
+      labels:["Income","Expense"],
+      datasets:[{data:[i,e]}]
     }
   });
-}
-
-// ===================== START
-
-if(!user){
-  showAuth();
-}else{
-  init();
 }
 
 </script>
