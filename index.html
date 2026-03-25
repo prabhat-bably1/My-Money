@@ -1,53 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>My Money</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Money</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; margin: 0; background: #0f172a; color: white; }
+    header { padding: 15px; background: #1e293b; text-align: center; font-size: 22px; }
+    .container { padding: 20px; }
+    .card { background: #1e293b; padding: 15px; margin-bottom: 15px; border-radius: 10px; }
+    input, select, button { padding: 10px; margin: 5px; border-radius: 6px; border: none; }
+    button { background: #38bdf8; color: black; cursor: pointer; }
+    table { width: 100%; margin-top: 10px; }
+    th, td { padding: 8px; text-align: left; }
+  </style>
 </head>
-<div id="loginBox" class="card">
-  <h2>🔐 Login</h2>
-  <input type="text" id="username" placeholder="Enter username">
-  <input type="password" id="password" placeholder="Enter password">
-  <button onclick="login()">Login</button>
-</div>
-
-<div id="app" style="display:none;">
-</div>
 <body>
+  <header>💰 My Money Tracker</header>
 
-<h1 class="title">💰 My Money</h1>
+  <div class="container">
+    <div class="card">
+      <h3>Add Transaction</h3>
+      <input type="text" id="desc" placeholder="Description" />
+      <input type="number" id="amount" placeholder="Amount" />
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button onclick="addTransaction()">Add</button>
+    </div>
 
-<!-- BALANCE -->
-<div class="balance-box">
-  <h2>Balance: ₹ <span id="balance">0</span></h2>
-</div>
+    <div class="card">
+      <h3>Balance: ₹<span id="balance">0</span></h3>
+      <canvas id="chart"></canvas>
+    </div>
 
-<!-- FORM -->
-<div class="form">
-  <input type="text" id="desc" placeholder="Description">
-  <input type="number" id="amount" placeholder="Amount">
+    <div class="card">
+      <h3>Transactions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+  </div>
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+  <script>
+    let transactions = JSON.parse(localStorage.getItem('data')) || [];
 
-  <select id="source">
-    <option>Salary</option>
-    <option>Business</option>
-    <option>Freelance</option>
-    <option>Stock</option>
-  </select>
+    function addTransaction() {
+      const desc = document.getElementById('desc').value;
+      const amount = +document.getElementById('amount').value;
+      const type = document.getElementById('type').value;
 
-  <button onclick="addTransaction()">Add</button>
-</div>
+      if (!desc || !amount) return alert('Enter valid data');
 
-<!-- LIST -->
-<h3>Transactions</h3>
-<ul id="list"></ul>
+      transactions.push({ desc, amount, type });
+      localStorage.setItem('data', JSON.stringify(transactions));
 
-<script src="script.js"></script>
+      render();
+    }
 
+    function render() {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+
+      let income = 0, expense = 0;
+
+      transactions.forEach(t => {
+        const row = `<tr>
+          <td>${t.desc}</td>
+          <td>₹${t.amount}</td>
+          <td>${t.type}</td>
+        </tr>`;
+        list.innerHTML += row;
+
+        if (t.type === 'income') income += t.amount;
+        else expense += t.amount;
+      });
+
+      document.getElementById('balance').innerText = income - expense;
+      updateChart(income, expense);
+    }
+
+    let chart;
+    function updateChart(income, expense) {
+      const ctx = document.getElementById('chart');
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Income', 'Expense'],
+          datasets: [{ data: [income, expense] }]
+        }
+      });
+    }
+
+    render();
+  </script>
 </body>
 </html>
