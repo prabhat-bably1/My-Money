@@ -132,6 +132,41 @@ function exportData(){
 }
 
 if(!user) showAuth(); else init();
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCx1EaNBZanLA5YDzWZcGKsMQ0w0UqMuDU",
+  authDomain: "my-money-app-28804.firebaseapp.com",
+  projectId: "my-money-app-28804",
+  storageBucket: "my-money-app-28804.appspot.com",
+  messagingSenderId: "317573257074",
+  appId: "1:317573257074:web:5b70bc7e0bad8633dcefeb"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function saveToDB(data){
+  db.collection("transactions").add(data);
+}
+
+function loadData(){
+  db.collection("transactions").onSnapshot(snapshot=>{
+    data = [];
+    snapshot.forEach(doc=>{
+      data.push({...doc.data(), id: doc.id});
+    });
+    render();
+  });
+}
+
+function deleteFromDB(id){
+  db.collection("transactions").doc(id).delete();
+}
+</script>
 </script>
 </body>
 </html>
