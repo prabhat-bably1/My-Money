@@ -67,8 +67,11 @@ app.innerHTML = `
 
 // LOGIN
 function login(){
-if(!name.value) return alert("Enter name");
-localStorage.setItem("user", name.value);
+const username = document.getElementById("name").value;
+
+if(!username) return alert("Enter name");
+
+localStorage.setItem("user", username);
 location.reload();
 }
 
