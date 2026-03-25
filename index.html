@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Money PRO</title>
 
@@ -17,12 +16,12 @@
 
 <style>
 body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
-header{display:flex;justify-content:space-between;padding:15px;background:#020617}
+header{display:flex;justify-content:space-between;padding:15px;background:#111827}
 .container{padding:15px}
-.card{background:#1e293b;padding:15px;border-radius:12px;margin-bottom:15px}
-input,select{padding:10px;margin:5px;border-radius:8px;border:none;width:100%}
-button{padding:10px;border:none;border-radius:8px;background:#22c55e;color:#000;font-weight:bold;margin-top:5px}
-button.pro{background:#f59e0b}
+.card{background:#1f2937;padding:15px;border-radius:12px;margin-bottom:15px}
+input,select{padding:10px;margin:5px;width:100%;border-radius:8px;border:none}
+button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#22c55e;color:#000;font-weight:bold}
+.pro{background:#f59e0b}
 .balance{font-size:28px;font-weight:bold}
 </style>
 </head>
@@ -38,22 +37,24 @@ button.pro{background:#f59e0b}
 
 <script>
 
-// 🔥 FIREBASE CONFIG (YAHAN APNA DALNA)
+// ✅ Firebase Config (tumhara already correct hai)
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_AUTH_DOMAIN",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_BUCKET",
-  messagingSenderId: "PASTE_MSG_ID",
-  appId: "PASTE_APP_ID"
+apiKey: "AIzaSyCx1EaNBZanLA5YDzWzGcKsMQowOUqMuDU",
+authDomain: "my-money-app-28804.firebaseapp.com",
+projectId: "my-money-app-28804",
+storageBucket: "my-money-app-28804.appspot.com",
+messagingSenderId: "317573257074",
+appId: "1:317573257074:web:5b70bc7e0bad8633dcefeb"
 };
 
+// ✅ Initialize ONLY ONCE
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// DATA
+// Storage
 let user = localStorage.getItem("user");
 let data = [];
+let pro = localStorage.getItem("pro");
 
 // LOGIN UI
 function showLogin(){
@@ -65,13 +66,9 @@ app.innerHTML = `
 </div>`;
 }
 
-// LOGIN
 function login(){
-const username = document.getElementById("name").value;
-
-if(!username) return alert("Enter name");
-
-localStorage.setItem("user", username);
+if(!name.value) return alert("Enter name");
+localStorage.setItem("user", name.value);
 location.reload();
 }
 
@@ -82,7 +79,6 @@ renderUI();
 loadData();
 }
 
-// LOGOUT
 function logout(){
 localStorage.clear();
 location.reload();
@@ -113,7 +109,6 @@ app.innerHTML = `
 </div>
 
 <div class="card">
-<h3>Transactions</h3>
 <table width="100%">
 <tbody id="list"></tbody>
 </table>
@@ -136,7 +131,7 @@ db.collection("users").doc(user)
 .collection("data").doc(t.id.toString()).set(t);
 }
 
-// LOAD
+// LOAD DATA
 function loadData(){
 db.collection("users").doc(user)
 .collection("data")
@@ -174,29 +169,32 @@ x.type=="income"?inc+=x.amount:exp+=x.amount;
 
 bal.innerText = inc-exp;
 
+// chart
 if(chart) chart.destroy();
-chart=new Chart(document.getElementById("chart"),{
-type:"bar",
+chart=new Chart(chartEl=document.getElementById("chart"),{
+type:'bar',
 data:{
-labels:["Income","Expense"],
+labels:['Income','Expense'],
 datasets:[{data:[inc,exp]}]
 }
 });
 }
 
-// 💳 RAZORPAY (KEY CHANGE KARNA)
+// 💳 Razorpay FIX
 function buyPro(){
+
 var options = {
-key: "PASTE_RAZORPAY_KEY",
+key: "rzp_test_xxxxxxxx", // 🔥 yaha apni REAL KEY daal
 amount: 49900,
 currency: "INR",
-name: "My Money PRO",
+name: "My Money Pro",
 handler: function (){
 alert("Payment Success ✅");
 localStorage.setItem("pro","yes");
 location.reload();
 }
 };
+
 new Razorpay(options).open();
 }
 
@@ -206,10 +204,10 @@ if(localStorage.getItem("pro")!="yes"){
 alert("Buy Pro First 🔒");
 return;
 }
-const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
-const a=document.createElement("a");
+const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+const a=document.createElement('a');
 a.href=URL.createObjectURL(blob);
-a.download="data.json";
+a.download='data.json';
 a.click();
 }
 
