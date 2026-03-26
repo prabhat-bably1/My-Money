@@ -2,219 +2,72 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Money PRO</title>
+<title>My Money</title>
 
-<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Razorpay -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
 <style>
-body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
-header{display:flex;justify-content:space-between;padding:15px;background:#111827}
-.container{padding:15px}
-.card{background:#1f2937;padding:15px;border-radius:12px;margin-bottom:15px}
-input,select{padding:10px;margin:5px;width:100%;border-radius:8px;border:none}
-button{padding:10px;margin-top:10px;border:none;border-radius:8px;background:#22c55e;color:#000;font-weight:bold}
+body{font-family:sans-serif;background:#0f172a;color:#fff;padding:10px}
+.card{background:#1e293b;padding:15px;margin:10px 0;border-radius:10px}
+button{padding:10px;border:none;background:#22c55e;margin-top:5px}
 .pro{background:#f59e0b}
-.balance{font-size:28px;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<header>
-<div>💰 My Money PRO</div>
-<div id="userBox"></div>
-</header>
+<h2>💰 My Money</h2>
 
-<div class="container" id="app"></div>
-
-<script>
-
-// ✅ Firebase Config (tumhara already correct hai)
-const firebaseConfig = {
-apiKey: "AIzaSyCx1EaNBZanLA5YDzWzGcKsMQowOUqMuDU",
-authDomain: "my-money-app-28804.firebaseapp.com",
-projectId: "my-money-app-28804",
-storageBucket: "my-money-app-28804.appspot.com",
-messagingSenderId: "317573257074",
-appId: "1:317573257074:web:5b70bc7e0bad8633dcefeb"
-};
-
-// ✅ Initialize ONLY ONCE
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Storage
-let user = localStorage.getItem("user");
-let data = [];
-let pro = localStorage.getItem("pro");
-
-// LOGIN UI
-function showLogin(){
-app.innerHTML = `
 <div class="card">
-<h2>Login</h2>
-<input id="name" placeholder="Enter your name">
-<button onclick="login()">Start</button>
-</div>`;
-}
+<input id="email" placeholder="Email"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+</div>
 
-function login(){
-if(!name.value) return alert("Enter name");
-localStorage.setItem("user", name.value);
-location.reload();
-}
-
-// INIT
-function init(){
-userBox.innerHTML = `👤 ${user} <button onclick="logout()">Logout</button>`;
-renderUI();
-loadData();
-}
-
-function logout(){
-localStorage.clear();
-location.reload();
-}
-
-// UI
-function renderUI(){
-app.innerHTML = `
 <div class="card">
-<h3>Add Transaction</h3>
 <input id="desc" placeholder="Description">
-<input id="amount" type="number" placeholder="Amount">
-<select id="type">
-<option value="income">Income</option>
-<option value="expense">Expense</option>
-</select>
+<input id="amt" type="number" placeholder="Amount">
 <button onclick="add()">Add</button>
 </div>
 
 <div class="card">
-<div class="balance">₹ <span id="bal">0</span></div>
+<button class="pro" onclick="pay()">Buy Pro ₹99</button>
+</div>
+
 <canvas id="chart"></canvas>
-</div>
 
-<div class="card">
-<button onclick="buyPro()" class="pro">🔥 Buy Pro ₹499</button>
-<button onclick="exportData()">Export</button>
-</div>
+<script>
+let data=[];
 
-<div class="card">
-<table width="100%">
-<tbody id="list"></tbody>
-</table>
-</div>
-`;
+function login(){
+localStorage.setItem("user", email.value);
+alert("Login Done");
 }
 
-// ADD DATA
 function add(){
-const t={
-id:Date.now(),
-desc:desc.value,
-amount:+amount.value,
-type:type.value
-};
-
-if(!t.desc || !t.amount) return alert("Fill all");
-
-db.collection("users").doc(user)
-.collection("data").doc(t.id.toString()).set(t);
+data.push(+amt.value);
+update();
 }
 
-// LOAD DATA
-function loadData(){
-db.collection("users").doc(user)
-.collection("data")
-.onSnapshot(snap=>{
-data=[];
-snap.forEach(doc=>data.push(doc.data()));
-render();
+function update(){
+new Chart(chart,{
+type:"bar",
+data:{labels:data,dataSets:[{data:data}]}
 });
 }
 
-// DELETE
-function del(id){
-db.collection("users").doc(user)
-.collection("data").doc(id.toString()).delete();
-}
-
-// RENDER
-let chart;
-function render(){
-let inc=0, exp=0;
-list.innerHTML="";
-
-data.forEach(x=>{
-list.innerHTML+=`
-<tr>
-<td>${x.desc}</td>
-<td>₹${x.amount}</td>
-<td>${x.type}</td>
-<td><button onclick="del(${x.id})">❌</button></td>
-</tr>
-`;
-
-x.type=="income"?inc+=x.amount:exp+=x.amount;
-});
-
-bal.innerText = inc-exp;
-
-// chart
-if(chart) chart.destroy();
-chart=new Chart(chartEl=document.getElementById("chart"),{
-type:'bar',
-data:{
-labels:['Income','Expense'],
-datasets:[{data:[inc,exp]}]
-}
-});
-}
-
-// 💳 Razorpay FIX
-function buyPro(){
-
+function pay(){
 var options = {
-key: "rzp_test_xxxxxxxx", // 🔥 yaha apni REAL KEY daal
-amount: 49900,
-currency: "INR",
-name: "My Money Pro",
+key: "rzp_test_xxxxx",
+amount: 9900,
 handler: function (){
-alert("Payment Success ✅");
+alert("Pro Activated");
 localStorage.setItem("pro","yes");
-location.reload();
 }
 };
-
 new Razorpay(options).open();
 }
-
-// PRO FEATURE
-function exportData(){
-if(localStorage.getItem("pro")!="yes"){
-alert("Buy Pro First 🔒");
-return;
-}
-const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
-const a=document.createElement('a');
-a.href=URL.createObjectURL(blob);
-a.download='data.json';
-a.click();
-}
-
-// START
-if(!user) showLogin();
-else init();
-
 </script>
 
 </body>
