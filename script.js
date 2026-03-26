@@ -1,78 +1,83 @@
-let transactions = JSON.parse(localStorage.getItem("data")) || [];
+const API = "https://my-money-backend-dq7n.onrender.com/api";
 
-function updateUI() {
-  let list = document.getElementById("list");
-  let balance = document.getElementById("balance");
+let token = localStorage.getItem("token") || "";
 
-  list.innerHTML = "";
+// REGISTER
+async function register() {
+  const res = await fetch(API + "/auth/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value
+    })
+  });
 
-  let total = 0;
+  const data = await res.json();
+  alert("Registered ✅");
+}
 
-  transactions.forEach((t, index) => {
-    let li = document.createElement("li");
+// LOGIN
+async function login() {
+  const res = await fetch(API + "/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value
+    })
+  });
 
-    li.innerHTML = `
-      ${t.desc} - ₹${t.amount} (${t.type})
-      <button onclick="deleteItem(${index})">❌</button>
-    `;
+  const data = await res.json();
 
-    list.appendChild(li);
+  token = data.token;
+  localStorage.setItem("token", token);
 
-    if (t.type === "income") {
-      total += t.amount;
-    } else {
-      total -= t.amount;
+  alert("Login Success 🔥");
+}
+
+// ADD TRANSACTION
+async function addTransaction() {
+  const res = await fetch(API + "/transactions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({
+      type: document.getElementById("type").value,
+      amount: document.getElementById("amount").value,
+      category: document.getElementById("category").value,
+      note: document.getElementById("note").value
+    })
+  });
+
+  const data = await res.json();
+  alert("Added ✅");
+  getTransactions();
+}
+
+// GET DATA
+async function getTransactions() {
+  const res = await fetch(API + "/transactions", {
+    headers: {
+      "Authorization": token
     }
   });
 
-  balance.innerText = total;
-}
+  const data = await res.json();
 
-function addTransaction() {
-  let desc = document.getElementById("desc").value;
-  let amount = Number(document.getElementById("amount").value);
-  let type = document.getElementById("type").value;
-  let source = document.getElementById("source").value;
+  let list = document.getElementById("list");
+  list.innerHTML = "";
 
-  if (desc === "" || amount === 0) {
-    alert("Enter valid data");
-    return;
-  }
-
-  transactions.push({ desc, amount, type, source });
-
-  localStorage.setItem("data", JSON.stringify(transactions));
-
-  updateUI();
-
-  document.getElementById("desc").value = "";
-  document.getElementById("amount").value = "";
-}
-
-function deleteItem(index) {
-  transactions.splice(index, 1);
-  localStorage.setItem("data", JSON.stringify(transactions));
-  updateUI();
-}
-
-updateUI();
-function login() {
-  let user = document.getElementById("username").value;
-  let pass = document.getElementById("password").value;
-
-  if (user === "admin" && pass === "1234") {
-    localStorage.setItem("loggedIn", true);
-    showApp();
-  } else {
-    alert("Wrong login");
-  }
-}
-
-function showApp() {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("app").style.display = "block";
-}
-
-if (localStorage.getItem("loggedIn")) {
-  showApp();
+  data.forEach(item => {
+    list.innerHTML += `
+      <li>${item.type} - ₹${item.amount} (${item.category})</li>
+    `;
+  });
 }
