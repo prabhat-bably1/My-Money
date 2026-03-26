@@ -42,7 +42,7 @@ let data=[];
 
 async function login(){
 
-const res = await fetch("https://YOUR-BACKEND-URL/login",{
+const res = await fetch("https://my-money-backend-dq7n.onrender.com/login",{
 method:"POST",
 headers:{ "Content-Type":"application/json"},
 body: JSON.stringify({
@@ -75,7 +75,7 @@ data:{labels:data,dataSets:[{data:data}]}
 
 async function pay(){
 
-const order = await fetch("https://YOUR-BACKEND-URL/create-order",{
+const order = await fetch("https://my-money-backend-dq7n.onrender.com/create-order",{
 method:"POST"
 }).then(res=>res.json());
 
@@ -87,7 +87,7 @@ order_id: order.id,
 
 handler: async function (response){
 
-await fetch("https://YOUR-BACKEND-URL/verify-payment",{
+await fetch("https://my-money-backend-dq7n.onrender.com/verify-payment",{
 method:"POST",
 headers:{ "Content-Type":"application/json"},
 body: JSON.stringify(response)
