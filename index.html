@@ -2,10 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Money SaaS</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<title>My Money</title>
 
 <style>
 body{
@@ -30,18 +27,13 @@ button{
   background:#22c55e;
   border:none;
   color:white;
-  margin-top:5px;
-}
-.pro{
-  background:gold;
-  color:black;
 }
 </style>
 </head>
 
 <body>
 
-<h2>💰 My Money SaaS</h2>
+<h2>💰 My Money (Simple Working)</h2>
 
 <!-- SIGNUP -->
 <div class="card">
@@ -59,9 +51,13 @@ button{
 <button onclick="login()">Login</button>
 </div>
 
-<!-- ADD MONEY -->
+<!-- BALANCE -->
 <div class="card">
-<h3>Add Money</h3>
+<h3>Balance: ₹ <span id="balance">0</span></h3>
+</div>
+
+<!-- ADD TRANSACTION -->
+<div class="card">
 <select id="type">
 <option value="income">Income</option>
 <option value="expense">Expense</option>
@@ -69,43 +65,45 @@ button{
 
 <input id="amount" type="number" placeholder="Amount">
 <input id="category" placeholder="Category">
-<input id="note" placeholder="Note">
 
 <button onclick="addTransaction()">Add</button>
 </div>
 
-<!-- PRO -->
-<div class="card">
-<button class="pro" onclick="pay()">Buy Pro ₹99</button>
-</div>
-
 <!-- LIST -->
 <div class="card">
-<h3>Transactions</h3>
 <ul id="list"></ul>
 </div>
-
-<canvas id="chart"></canvas>
 
 <script>
 
 const API = "https://my-money-backend-dq7n.onrender.com";
-let token = localStorage.getItem("token") || "";
+
 let data = [];
 
 // ✅ SIGNUP
 async function signup(){
-  const res = await fetch(API + "/signup",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      email: s_email.value,
-      password: s_pass.value
-    })
-  });
+  try{
+    const res = await fetch(API + "/signup",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        email: s_email.value,
+        password: s_pass.value
+      })
+    });
 
-  const d = await res.json();
-  alert("Signup Success ✅");
+    const d = await res.json();
+    console.log("SIGNUP:", d);
+
+    if(d.success){
+      alert("Signup Success ✅");
+    }else{
+      alert(d.error || "Signup Failed ❌");
+    }
+
+  }catch(err){
+    alert("Server Error ❌");
+  }
 }
 
 // ✅ LOGIN
@@ -115,17 +113,16 @@ async function login(){
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
+        email: email.value,
+        password: password.value
       })
     });
 
     const d = await res.json();
     console.log("LOGIN:", d);
 
-    if(d.success){
+    if(d.token){
       localStorage.setItem("token", d.token);
-      token = d.token;
       alert("Login Success ✅");
     }else{
       alert(d.error || "Login Failed ❌");
@@ -136,20 +133,20 @@ async function login(){
   }
 }
 
-// ✅ ADD TRANSACTION (frontend only for now)
+// ✅ ADD TRANSACTION
 function addTransaction(){
+
   const t = {
     type: type.value,
     amount: Number(amount.value),
-    category: category.value,
-    note: note.value
+    category: category.value
   };
 
   data.push(t);
   updateUI();
 }
 
-// ✅ UI UPDATE
+// ✅ UPDATE UI
 function updateUI(){
   list.innerHTML = "";
   let total = 0;
@@ -164,53 +161,20 @@ function updateUI(){
 
     list.appendChild(li);
 
-    if(t.type==="income") total += t.amount;
-    else total -= t.amount;
+    if(t.type === "income"){
+      total += t.amount;
+    }else{
+      total -= t.amount;
+    }
   });
 
-  drawChart();
+  balance.innerText = total;
 }
 
 // ✅ DELETE
 function remove(i){
   data.splice(i,1);
   updateUI();
-}
-
-// ✅ CHART
-function drawChart(){
-  new Chart(chart,{
-    type:"bar",
-    data:{
-      labels:data.map((_,i)=>"T"+i),
-      datasets:[{data:data.map(d=>d.amount)}]
-    }
-  });
-}
-
-// ✅ PAYMENT
-async function pay(){
-  const res = await fetch(API + "/create-order",{method:"POST"});
-  const order = await res.json();
-
-  const options = {
-    key: order.key,
-    amount: order.amount,
-    currency:"INR",
-    order_id: order.id,
-
-    handler: async function(response){
-      await fetch(API + "/verify-payment",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(response)
-      });
-
-      alert("Payment Success 🎉");
-    }
-  };
-
-  new Razorpay(options).open();
 }
 
 </script>
