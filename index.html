@@ -61,22 +61,31 @@ async function register() {
 }
 
 // LOGIN
-async function login() {
-  const res = await fetch(API + "/api/auth/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      email: document.getElementById("email2").value,
-      password: document.getElementById("password2").value
-    })
-  });
+async function login(){
+  try{
+    const res = await fetch(API + "/login",{
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("pass").value
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
 
-  token = data.token;
-  localStorage.setItem("token", token);
+    if(data.success){
+      localStorage.setItem("token", data.token);
+      alert("Login Success ✅");
+    }else{
+      alert(data.error || "Login Failed ❌");
+    }
 
-  alert("Login Success 🔥");
+  }catch(err){
+    console.log(err);
+    alert("Server Error ❌");
+  }
 }
 
 // ADD TRANSACTION
