@@ -40,9 +40,25 @@ button{padding:10px;border:none;background:#22c55e;margin-top:5px}
 <script>
 let data=[];
 
-function login(){
-localStorage.setItem("user", email.value);
-alert("Login Done");
+async function login(){
+
+const res = await fetch("https://YOUR-BACKEND-URL/login",{
+method:"POST",
+headers:{ "Content-Type":"application/json"},
+body: JSON.stringify({
+email: document.getElementById("email").value,
+password: document.getElementById("pass").value
+})
+});
+
+const data = await res.json();
+
+if(data.token){
+localStorage.setItem("token", data.token);
+alert("Login Success ✅");
+}else{
+alert("Login Failed ❌");
+}
 }
 
 function add(){
@@ -57,15 +73,31 @@ data:{labels:data,dataSets:[{data:data}]}
 });
 }
 
-function pay(){
+async function pay(){
+
+const order = await fetch("https://YOUR-BACKEND-URL/create-order",{
+method:"POST"
+}).then(res=>res.json());
+
 var options = {
-key: "rzp_test_xxxxx",
-amount: 9900,
-handler: function (){
-alert("Pro Activated");
+key: "rzp_test_xxxxx", // apna key
+amount: order.amount,
+currency: "INR",
+order_id: order.id,
+
+handler: async function (response){
+
+await fetch("https://YOUR-BACKEND-URL/verify-payment",{
+method:"POST",
+headers:{ "Content-Type":"application/json"},
+body: JSON.stringify(response)
+});
+
+alert("Payment Success 💰");
 localStorage.setItem("pro","yes");
 }
 };
+
 new Razorpay(options).open();
 }
 </script>
