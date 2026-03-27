@@ -2,175 +2,40 @@
 <html>
 <head>
   <title>My Money</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Signup</h2>
-<input id="s_email" placeholder="Email"><br><br>
-<input id="s_pass" placeholder="Password" type="password"><br><br>
-<button onclick="signup()">Signup</button>
+<h1>💰 My Money</h1>
 
-<hr>
+<div class="card">
+  <h2>Signup</h2>
+  <input id="signupEmail" placeholder="Email">
+  <input id="signupPassword" type="password" placeholder="Password">
+  <button onclick="signup()">Signup</button>
+</div>
 
-<h2>Login</h2>
-<input id="email" placeholder="Email"><br><br>
-<input id="password" placeholder="Password" type="password"><br><br>
-<button onclick="login()">Login</button>
+<div class="card">
+  <h2>Login</h2>
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
 
-<hr>
+<div class="card">
+  <h2>Balance: ₹ <span id="balance">0</span></h2>
 
-<h2>Balance: ₹ <span id="balance">0</span></h2>
+  <select id="type">
+    <option>income</option>
+    <option>expense</option>
+  </select>
 
-<h3>Add Transaction</h3>
-<select id="type">
-  <option value="income">Income</option>
-  <option value="expense">Expense</option>
-</select><br><br>
+  <input id="amount" placeholder="Amount">
+  <input id="category" placeholder="Category">
 
-<input id="amount" placeholder="Amount"><br><br>
-<input id="category" placeholder="Category"><br><br>
+  <button onclick="addTransaction()">Add</button>
+</div>
 
-<button onclick="addTransaction()">Add</button>
-
-<hr>
-
-<h3>Transactions</h3>
-<ul id="list"></ul>
-
-<script>
-
-const API = "https://my-money-backend-dq7n.onrender.com";
-
-// ✅ SIGNUP
-async function signup(){
-  try{
-    const res = await fetch(API + "/api/auth/register", {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        email: document.getElementById("s_email").value,
-        password: document.getElementById("s_pass").value
-      })
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if(res.ok){
-      alert("Signup Success ✅");
-    }else{
-      alert(data.error || "Signup Failed ❌");
-    }
-
-  }catch(err){
-    console.log(err);
-    alert("Server Error ❌");
-  }
-}
-
-// ✅ LOGIN
-async function login(){
-  try {
-    const res = await fetch(API + "/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
-      })
-    });
-
-    const data = await res.json();
-
-    if(data.success){
-      localStorage.setItem("token", data.token);
-      alert("Login Success ✅");
-    } else {
-      alert(data.error);
-    }
-
-  } catch(err){
-    alert("Server error ❌");
-  }
-}
-
-// ✅ ADD TRANSACTION
-async function addTransaction(){
-  try{
-    const res = await fetch(API + "/api/transactions", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization": "Bearer " + localStorage.getItem("token")
-      },
-      body: JSON.stringify({
-        type: document.getElementById("type").value,
-        amount: Number(document.getElementById("amount").value),
-        category: document.getElementById("category").value
-      })
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if(res.ok){
-      alert("Added ✅");
-      getTransactions();
-    }else{
-      alert(data.error || "Error ❌");
-    }
-
-  }catch(err){
-    console.log(err);
-    alert("Server Error ❌");
-  }
-}
-
-// ✅ GET TRANSACTIONS
-async function getTransactions(){
-  try{
-    const res = await fetch(API + "/api/transactions", {
-      headers:{
-        "Authorization": "Bearer " + localStorage.getItem("token")
-      }
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if(res.ok){
-      updateUI(data);
-    }
-
-  }catch(err){
-    console.log(err);
-  }
-}
-
-// ✅ UPDATE UI
-function updateUI(data){
-  const list = document.getElementById("list");
-  const balance = document.getElementById("balance");
-
-  list.innerHTML = "";
-  let total = 0;
-
-  data.forEach(t=>{
-    const li = document.createElement("li");
-    li.innerText = `${t.category} ₹${t.amount} (${t.type})`;
-    list.appendChild(li);
-
-    if(t.type === "income"){
-      total += t.amount;
-    }else{
-      total -= t.amount;
-    }
-  });
-
-  balance.innerText = total;
-}
-
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
