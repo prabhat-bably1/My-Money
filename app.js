@@ -3,57 +3,73 @@ const API = "http://my-money-backend-dq7n.onrender.com";
 let userId = null;
 
 // Signup
-async function signup() {
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
+function signup() {
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
 
-  const res = await fetch(API + "/signup", {
+  fetch(API + "/signup", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-  alert(data.message);
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message))
+  .catch(err => alert("Signup Error ❌"));
 }
 
 // Login
-async function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+function login() {
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
 
-  const res = await fetch(API + "/login", {
+  fetch(API + "/login", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await res.json();
-
-  if (data.user) {
-    userId = data.user._id;
-    alert("Login Success");
-    loadBalance();
-  } else {
-    alert(data.message);
-  }
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Login Success ✅");
+      localStorage.setItem("userId", data.userId);
+    } else {
+      alert(data.message);
+    }
+  })
+  .catch(err => alert("Login Error ❌"));
 }
 
 // Add Transaction
-async function addTransaction() {
-  const type = document.getElementById("type").value;
-  const amount = document.getElementById("amount").value;
-  const category = document.getElementById("category").value;
+function addTransaction() {
+  let type = document.getElementById("type").value;
+  let amount = document.getElementById("amount").value;
+  let category = document.getElementById("category").value;
 
-  const res = await fetch(API + "/add", {
+  fetch(API + "/add", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ userId, type, amount, category })
-  });
-
-  const data = await res.json();
-  alert(data.message);
-  loadBalance();
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId: localStorage.getItem("userId"),
+      type: type,
+      amount: amount,
+      category: category
+    })
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message))
+  .catch(err => alert("Add Error ❌"));
 }
 
 // Load Balance
