@@ -1,79 +1,69 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-let userId = null;
+// SIGNUP
+document.getElementById("signupBtn").onclick = async () => {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
 
-// Signup
-function signup() {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
-
-  fetch(API + "/signup", {
+  const res = await fetch(API + "/signup", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email: email,
-      password: password
-    })
-  })
-  .then(res => res.json())
-  .then(data => alert(data.message))
-  .catch(err => alert("Signup Error ❌"));
-}
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
 
-// Login
-function login() {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+  const data = await res.json();
+  alert(data.message);
+};
 
-  fetch(API + "/login", {
+// LOGIN
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const res = await fetch(API + "/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email: email,
-      password: password
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("Login Success ✅");
-      localStorage.setItem("userId", data.userId);
-    } else {
-      alert(data.message);
-    }
-  })
-  .catch(err => alert("Login Error ❌"));
-}
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
 
-// Add Transaction
-function addTransaction() {
-  let type = document.getElementById("type").value;
-  let amount = document.getElementById("amount").value;
-  let category = document.getElementById("category").value;
+  const data = await res.json();
 
-  fetch(API + "/add", {
+  if (data.success) {
+    alert("Login Success ✅");
+    localStorage.setItem("userId", data.userId);
+    loadBalance();
+  } else {
+    alert(data.message);
+  }
+};
+
+// ADD TRANSACTION
+document.getElementById("addBtn").onclick = async () => {
+  const type = document.getElementById("type").value;
+  const amount = document.getElementById("amount").value;
+  const category = document.getElementById("category").value;
+
+  const res = await fetch(API + "/add", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       userId: localStorage.getItem("userId"),
-      type: type,
-      amount: amount,
-      category: category
+      type,
+      amount,
+      category
     })
-  })
-  .then(res => res.json())
-  .then(data => alert(data.message))
-  .catch(err => alert("Add Error ❌"));
-}
+  });
 
-// Load Balance
+  const data = await res.json();
+  alert(data.message);
+  loadBalance();
+};
+
+// LOAD BALANCE
 async function loadBalance() {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return;
+
   const res = await fetch(API + "/balance/" + userId);
   const data = await res.json();
 
