@@ -1,4 +1,4 @@
-const API = "http://localhost:5000"; // baad me change hoga
+const API = "http://my-money-backend-dq7n.onrender.com";
 
 let userId = null;
 
