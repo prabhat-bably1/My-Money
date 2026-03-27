@@ -1,4 +1,4 @@
-const API = "http://my-money-backend-dq7n.onrender.com";
+const API = "https://my-money-backend-dq7n.onrender.com";
 
 let userId = null;
 
