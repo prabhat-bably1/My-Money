@@ -1,107 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Money</title>
-
-<style>
-body{
-  font-family:sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:15px;
-}
-.card{
-  background:#1e293b;
-  padding:15px;
-  margin:10px 0;
-  border-radius:10px;
-}
-input,select{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-}
-button{
-  padding:10px;
-  background:#22c55e;
-  border:none;
-  color:white;
-}
-</style>
+  <title>My Money</title>
 </head>
-
 <body>
 
-<h2>💰 My Money (Simple Working)</h2>
-
-<!-- SIGNUP -->
-<div class="card">
-<h3>Signup</h3>
-<input id="s_email" placeholder="Email">
-<input id="s_pass" type="password" placeholder="Password">
+<h2>Signup</h2>
+<input id="s_email" placeholder="Email"><br><br>
+<input id="s_pass" placeholder="Password" type="password"><br><br>
 <button onclick="signup()">Signup</button>
-</div>
 
-<!-- LOGIN -->
-<div class="card">
-<h3>Login</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
+<hr>
+
+<h2>Login</h2>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" placeholder="Password" type="password"><br><br>
 <button onclick="login()">Login</button>
-</div>
 
-<!-- BALANCE -->
-<div class="card">
-<h3>Balance: ₹ <span id="balance">0</span></h3>
-</div>
+<hr>
 
-<!-- ADD TRANSACTION -->
-<div class="card">
+<h2>Balance: ₹ <span id="balance">0</span></h2>
+
+<h3>Add Transaction</h3>
 <select id="type">
-<option value="income">Income</option>
-<option value="expense">Expense</option>
-</select>
+  <option value="income">Income</option>
+  <option value="expense">Expense</option>
+</select><br><br>
 
-<input id="amount" type="number" placeholder="Amount">
-<input id="category" placeholder="Category">
+<input id="amount" placeholder="Amount"><br><br>
+<input id="category" placeholder="Category"><br><br>
 
 <button onclick="addTransaction()">Add</button>
-</div>
 
-<!-- LIST -->
-<div class="card">
+<hr>
+
+<h3>Transactions</h3>
 <ul id="list"></ul>
-</div>
 
 <script>
 
 const API = "https://my-money-backend-dq7n.onrender.com";
-
-let data = [];
 
 // ✅ SIGNUP
 async function signup(){
   try{
     const res = await fetch(API + "/api/auth/register", {
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        email: s_email.value,
-        password: s_pass.value
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: document.getElementById("s_email").value,
+        password: document.getElementById("s_pass").value
       })
     });
 
-    if(!res.ok){
-      const text = await res.text();
-      alert("Error: " + text);
-      return;
+    const data = await res.json();
+    console.log(data);
+
+    if(res.ok){
+      alert("Signup Success ✅");
+    }else{
+      alert(data.error || "Signup Failed ❌");
     }
-
-    const d = await res.json();
-    console.log("SIGNUP:", d);
-
-    alert("Signup Success ✅");
 
   }catch(err){
     console.log(err);
@@ -114,31 +73,22 @@ async function login(){
   try{
     const res = await fetch(API + "/api/auth/login", {
       method:"POST",
-      headers: {
-  "Content-Type": "application/json",
-  "Authorization": "Bearer " + localStorage.getItem("token")
-      }
-      body:JSON.stringify({
-        email: email.value,
-        password: password.value
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
       })
     });
 
-    // 🔥 IMPORTANT
-    if(!res.ok){
-      const text = await res.text();
-      alert("Error: " + text);
-      return;
-    }
+    const data = await res.json();
+    console.log(data);
 
-    const d = await res.json();
-    console.log("LOGIN:", d);
-
-    if(d.token){
-      localStorage.setItem("token", d.token);
+    if(res.ok && data.token){
+      localStorage.setItem("token", data.token);
       alert("Login Success ✅");
+      getTransactions();
     }else{
-      alert(d.error || "Login Failed ❌");
+      alert(data.error || "Login Failed ❌");
     }
 
   }catch(err){
@@ -148,31 +98,69 @@ async function login(){
 }
 
 // ✅ ADD TRANSACTION
-function addTransaction(){
+async function addTransaction(){
+  try{
+    const res = await fetch(API + "/api/transactions", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        type: document.getElementById("type").value,
+        amount: Number(document.getElementById("amount").value),
+        category: document.getElementById("category").value
+      })
+    });
 
-  const t = {
-    type: type.value,
-    amount: Number(amount.value),
-    category: category.value
-  };
+    const data = await res.json();
+    console.log(data);
 
-  data.push(t);
-  updateUI();
+    if(res.ok){
+      alert("Added ✅");
+      getTransactions();
+    }else{
+      alert(data.error || "Error ❌");
+    }
+
+  }catch(err){
+    console.log(err);
+    alert("Server Error ❌");
+  }
+}
+
+// ✅ GET TRANSACTIONS
+async function getTransactions(){
+  try{
+    const res = await fetch(API + "/api/transactions", {
+      headers:{
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if(res.ok){
+      updateUI(data);
+    }
+
+  }catch(err){
+    console.log(err);
+  }
 }
 
 // ✅ UPDATE UI
-function updateUI(){
+function updateUI(data){
+  const list = document.getElementById("list");
+  const balance = document.getElementById("balance");
+
   list.innerHTML = "";
   let total = 0;
 
-  data.forEach((t,i)=>{
+  data.forEach(t=>{
     const li = document.createElement("li");
-
-    li.innerHTML = `
-      ${t.category} ₹${t.amount} (${t.type})
-      <button onclick="remove(${i})">❌</button>
-    `;
-
+    li.innerText = `${t.category} ₹${t.amount} (${t.type})`;
     list.appendChild(li);
 
     if(t.type === "income"){
@@ -183,12 +171,6 @@ function updateUI(){
   });
 
   balance.innerText = total;
-}
-
-// ✅ DELETE
-function remove(i){
-  data.splice(i,1);
-  updateUI();
 }
 
 </script>
