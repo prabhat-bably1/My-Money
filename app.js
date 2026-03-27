@@ -28,12 +28,16 @@ document.getElementById("loginBtn").onclick = async () => {
 
   const data = await res.json();
 
+  console.log(data); // 🔥 DEBUG
+
   if (data.success) {
     alert("Login Success ✅");
+
     localStorage.setItem("userId", data.userId);
-    loadBalance();
+
+    loadBalance(); // 🔥 CALL
   } else {
-    alert(data.message);
+    alert(data.message || "Login Failed ❌");
   }
 };
 
@@ -62,10 +66,25 @@ document.getElementById("addBtn").onclick = async () => {
 // LOAD BALANCE
 async function loadBalance() {
   const userId = localStorage.getItem("userId");
-  if (!userId) return;
+
+  if (!userId) {
+    alert("Login first ❌");
+    return;
+  }
 
   const res = await fetch(API + "/balance/" + userId);
   const data = await res.json();
 
-  document.getElementById("balance").innerText = data.balance;
+  console.log(data); // DEBUG
+
+  if (data.balance !== undefined) {
+    document.getElementById("balance").innerText = data.balance;
+  } else {
+    alert("Balance error ❌");
+  }
 }
+window.onload = () => {
+  if (localStorage.getItem("userId")) {
+    loadBalance();
+  }
+};
