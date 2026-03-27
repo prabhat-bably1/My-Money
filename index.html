@@ -70,25 +70,27 @@ async function signup(){
 
 // ✅ LOGIN
 async function login(){
-  try{
-    alert("Login start");
-
+  try {
     const res = await fetch(API + "/api/auth/login", {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: document.getElementById("email").value,
         password: document.getElementById("password").value
       })
     });
 
-    alert("Response aaya");
+    const data = await res.json();
 
-    const text = await res.text();
-    alert("Server bola: " + text);
+    if(data.success){
+      localStorage.setItem("token", data.token);
+      alert("Login Success ✅");
+    } else {
+      alert(data.error);
+    }
 
-  }catch(err){
-    alert("Error: " + err);
+  } catch(err){
+    alert("Server error ❌");
   }
 }
 
