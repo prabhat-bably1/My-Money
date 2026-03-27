@@ -1,47 +1,28 @@
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #1d2671, #c33764);
+  font-family: Arial;
+  background: #0f172a;
   color: white;
-  margin: 0;
-}
-
-.container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
+  text-align: center;
 }
 
 .card {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  background: #1e293b;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 12px;
 }
 
 input, select {
-  width: 90%;
+  display: block;
+  margin: 10px auto;
   padding: 10px;
-  margin: 5px;
-  border-radius: 10px;
-  border: none;
+  width: 80%;
 }
 
 button {
   padding: 10px 20px;
-  border-radius: 10px;
+  background: #22c55e;
   border: none;
-  background: #ff7eb3;
   color: white;
-  font-weight: bold;
-}
-
-li {
-  display: flex;
-  justify-content: space-between;
-  background: rgba(255,255,255,0.1);
-  padding: 10px;
-  margin: 5px;
-  border-radius: 10px;
+  border-radius: 8px;
 }
