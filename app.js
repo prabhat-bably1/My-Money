@@ -1,101 +1,87 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-let chart;
-
-// SIGNUP
-document.getElementById("signupBtn").onclick = async () => {
-  const email = signupEmail.value;
-  const password = signupPassword.value;
-
-  const res = await fetch(API + "/signup", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({email, password})
-  });
-
-  const data = await res.json();
-  alert(data.message);
-};
+function showTab(tab){
+  dashboard.style.display = tab==="dashboard"?"block":"none";
+  history.style.display = tab==="history"?"block":"none";
+  loadTransactions();
+}
 
 // LOGIN
-document.getElementById("loginBtn").onclick = async () => {
-  const email = loginEmail.value;
-  const password = loginPassword.value;
-
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({email, password})
-  });
-
-  const data = await res.json();
-
-  if(data.success){
-    localStorage.setItem("userId", data.userId);
-    alert("Login Success ✅");
-    loadBalance();
-    loadChart();
-  } else {
-    alert("User not found ❌");
-  }
-};
-
-// ADD
-document.getElementById("addBtn").onclick = async () => {
-  const userId = localStorage.getItem("userId");
-
-  if(!userId){
-    alert("Login first ❌");
-    return;
-  }
-
-  const res = await fetch(API + "/add", {
+async function login(){
+  const res = await fetch(API+"/login",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      userId,
-      type: type.value,
-      amount: amount.value,
-      category: category.value
+    body:JSON.stringify({
+      email:loginEmail.value,
+      password:loginPassword.value
     })
   });
 
   const data = await res.json();
-  alert(data.message);
+
+  if(data.token){
+    localStorage.setItem("token", data.token);
+    loadBalance();
+  }
+}
+
+// ADD
+async function add(){
+  const token = localStorage.getItem("token");
+
+  await fetch(API+"/add",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "authorization":token
+    },
+    body:JSON.stringify({
+      type:type.value,
+      amount:Number(amount.value),
+      category:category.value
+    })
+  });
 
   loadBalance();
-  loadChart();
-};
+  loadTransactions();
+}
 
 // BALANCE
 async function loadBalance(){
-  const userId = localStorage.getItem("userId");
-  if(!userId) return;
+  const token = localStorage.getItem("token");
 
-  const res = await fetch(API + "/balance/" + userId);
+  const res = await fetch(API+"/balance",{
+    headers:{authorization:token}
+  });
+
   const data = await res.json();
-
-  balance.innerText = data.balance || 0;
+  balance.innerText = data.balance;
 }
 
-// CHART (dummy analytics)
-async function loadChart(){
-  const ctx = document.getElementById('chart');
+// TRANSACTIONS
+async function loadTransactions(){
+  const token = localStorage.getItem("token");
 
-  if(chart) chart.destroy();
+  const res = await fetch(API+"/transactions",{
+    headers:{authorization:token}
+  });
 
-  chart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Income', 'Expense'],
-      datasets: [{
-        data: [60, 40],
-      }]
-    }
+  const data = await res.json();
+
+  list.innerHTML = "";
+
+  data.forEach(t=>{
+    list.innerHTML += `
+      <li>
+        ₹${t.amount} - ${t.category}
+        <button onclick="del('${t._id}')">❌</button>
+      </li>
+    `;
   });
 }
 
-window.onload = () => {
-  loadBalance();
-  loadChart();
-};
+// DELETE
+async function del(id){
+  await fetch(API+"/delete/"+id,{method:"DELETE"});
+  loadTransactions();
+}
