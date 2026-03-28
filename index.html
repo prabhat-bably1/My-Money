@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>My Money</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
 <body>
 
 <h2>Signup</h2>
-<input id="signupEmail">
-<input id="signupPassword">
+<input id="signupEmail" placeholder="email">
+<input id="signupPassword" placeholder="password">
 <button onclick="signup()">Signup</button>
 
 <h2>Login</h2>
-<input id="loginEmail">
-<input id="loginPassword">
+<input id="loginEmail" placeholder="email">
+<input id="loginPassword" placeholder="password">
 <button onclick="login()">Login</button>
 
 <h2>Balance: ₹ <span id="balance">0</span></h2>
 
 <select id="type">
-  <option value="income">Income</option>
-  <option value="expense">Expense</option>
+<option value="income">Income</option>
+<option value="expense">Expense</option>
 </select>
 
-<input id="amount">
-<input id="category">
+<input id="amount" placeholder="amount">
+<input id="category" placeholder="category">
+
 <button onclick="add()">Add</button>
 
-<h2>History</h2>
 <ul id="list"></ul>
-
-<canvas id="chart"></canvas>
 
 <script src="script.js"></script>
 </body>
