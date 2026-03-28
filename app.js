@@ -1,12 +1,22 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-function showTab(tab){
-  dashboard.style.display = tab==="dashboard"?"block":"none";
-  history.style.display = tab==="history"?"block":"none";
-  loadTransactions();
+let userId = localStorage.getItem("userId");
+
+// Signup
+async function signup(){
+  await fetch(API+"/signup",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      email:signupEmail.value,
+      password:signupPassword.value
+    })
+  });
+
+  alert("Signup done");
 }
 
-// LOGIN
+// Login
 async function login(){
   const res = await fetch(API+"/login",{
     method:"POST",
@@ -19,69 +29,102 @@ async function login(){
 
   const data = await res.json();
 
-  if(data.token){
-    localStorage.setItem("token", data.token);
-    loadBalance();
+  if(data.success){
+    userId = data.userId;
+    localStorage.setItem("userId", userId);
+
+    alert("Login success");
+
+    loadAll();
+  } else {
+    alert("User not found");
   }
 }
 
-// ADD
+// Add
 async function add(){
-  const token = localStorage.getItem("token");
+  if(!userId){
+    alert("Login first");
+    return;
+  }
 
   await fetch(API+"/add",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "authorization":token
-    },
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
+      userId,
       type:type.value,
       amount:Number(amount.value),
       category:category.value
     })
   });
 
-  loadBalance();
-  loadTransactions();
+  loadAll();
 }
 
-// BALANCE
-async function loadBalance(){
-  const token = localStorage.getItem("token");
+// Load all
+async function loadAll(){
+  if(!userId) return;
 
-  const res = await fetch(API+"/balance",{
-    headers:{authorization:token}
+  // Balance
+  const b = await fetch(API+"/balance",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({userId})
   });
 
-  const data = await res.json();
-  balance.innerText = data.balance;
-}
+  const bdata = await b.json();
+  balance.innerText = bdata.balance;
 
-// TRANSACTIONS
-async function loadTransactions(){
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(API+"/transactions",{
-    headers:{authorization:token}
+  // Transactions
+  const res = await fetch(API+"/get",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({userId})
   });
 
   const data = await res.json();
 
   list.innerHTML = "";
 
+  let income=0, expense=0;
+
   data.forEach(t=>{
+    if(t.type==="income") income+=t.amount;
+    else expense+=t.amount;
+
     list.innerHTML += `
       <li>
-        ₹${t.amount} - ${t.category}
+        ₹${t.amount} (${t.category})
         <button onclick="del('${t._id}')">❌</button>
       </li>
     `;
   });
+
+  drawChart(income,expense);
 }
 
-// DELETE
+// Delete
 async function del(id){
-  await fetch(API+"/delete/"+id,{method:"DELETE"});
-  loadTransactions();
+  await fetch(API+"/delete",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({id})
+  });
+
+  loadAll();
 }
+
+// Chart
+function drawChart(income,expense){
+  new Chart(document.getElementById("chart"),{
+    type:"pie",
+    data:{
+      labels:["Income","Expense"],
+      datasets:[{data:[income,expense]}]
+    }
+  });
+}
+
+// Auto load
+window.onload=loadAll;
