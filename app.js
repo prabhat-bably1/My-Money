@@ -1,14 +1,16 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
+let chart;
+
 // SIGNUP
 document.getElementById("signupBtn").onclick = async () => {
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
+  const email = signupEmail.value;
+  const password = signupPassword.value;
 
   const res = await fetch(API + "/signup", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({email, password})
   });
 
   const data = await res.json();
@@ -17,69 +19,83 @@ document.getElementById("signupBtn").onclick = async () => {
 
 // LOGIN
 document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  const email = loginEmail.value;
+  const password = loginPassword.value;
 
   const res = await fetch(API + "/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({email, password})
   });
 
   const data = await res.json();
 
-  if (data.success) {
-    alert("Login Success ✅");
+  if(data.success){
     localStorage.setItem("userId", data.userId);
+    alert("Login Success ✅");
     loadBalance();
+    loadChart();
   } else {
     alert("User not found ❌");
   }
 };
 
-// ADD TRANSACTION
+// ADD
 document.getElementById("addBtn").onclick = async () => {
   const userId = localStorage.getItem("userId");
 
-  if (!userId) {
+  if(!userId){
     alert("Login first ❌");
     return;
   }
 
-  const type = document.getElementById("type").value;
-  const amount = document.getElementById("amount").value;
-  const category = document.getElementById("category").value;
-
   const res = await fetch(API + "/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
     body: JSON.stringify({
       userId,
-      type,
-      amount,
-      category
+      type: type.value,
+      amount: amount.value,
+      category: category.value
     })
   });
 
   const data = await res.json();
+  alert(data.message);
 
-  alert(data.message || "Added ✅");
-
-  loadBalance(); // 🔥 MOST IMPORTANT
+  loadBalance();
+  loadChart();
 };
-// LOAD BALANCE
-async function loadBalance() {
-  const userId = localStorage.getItem("userId");
 
-  if (!userId) return;
+// BALANCE
+async function loadBalance(){
+  const userId = localStorage.getItem("userId");
+  if(!userId) return;
 
   const res = await fetch(API + "/balance/" + userId);
   const data = await res.json();
 
-  console.log("Balance API:", data);
-
-  document.getElementById("balance").innerText = data.balance || 0;
+  balance.innerText = data.balance || 0;
 }
+
+// CHART (dummy analytics)
+async function loadChart(){
+  const ctx = document.getElementById('chart');
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Income', 'Expense'],
+      datasets: [{
+        data: [60, 40],
+      }]
+    }
+  });
+}
+
 window.onload = () => {
   loadBalance();
+  loadChart();
 };
