@@ -28,21 +28,24 @@ document.getElementById("loginBtn").onclick = async () => {
 
   const data = await res.json();
 
-  console.log(data); // 🔥 DEBUG
-
   if (data.success) {
     alert("Login Success ✅");
-
     localStorage.setItem("userId", data.userId);
-
-    loadBalance(); // 🔥 CALL
+    loadBalance();
   } else {
-    alert(data.message || "Login Failed ❌");
+    alert("User not found ❌");
   }
 };
 
 // ADD TRANSACTION
 document.getElementById("addBtn").onclick = async () => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Login first ❌");
+    return;
+  }
+
   const type = document.getElementById("type").value;
   const amount = document.getElementById("amount").value;
   const category = document.getElementById("category").value;
@@ -51,7 +54,7 @@ document.getElementById("addBtn").onclick = async () => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      userId: localStorage.getItem("userId"),
+      userId,
       type,
       amount,
       category
@@ -59,32 +62,24 @@ document.getElementById("addBtn").onclick = async () => {
   });
 
   const data = await res.json();
-  alert(data.message);
-  loadBalance();
-};
 
+  alert(data.message || "Added ✅");
+
+  loadBalance(); // 🔥 MOST IMPORTANT
+};
 // LOAD BALANCE
 async function loadBalance() {
   const userId = localStorage.getItem("userId");
 
-  if (!userId) {
-    alert("Login first ❌");
-    return;
-  }
+  if (!userId) return;
 
   const res = await fetch(API + "/balance/" + userId);
   const data = await res.json();
 
-  console.log(data); // DEBUG
+  console.log("Balance API:", data);
 
-  if (data.balance !== undefined) {
-    document.getElementById("balance").innerText = data.balance;
-  } else {
-    alert("Balance error ❌");
-  }
+  document.getElementById("balance").innerText = data.balance || 0;
 }
 window.onload = () => {
-  if (localStorage.getItem("userId")) {
-    loadBalance();
-  }
+  loadBalance();
 };
