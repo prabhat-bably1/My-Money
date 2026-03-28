@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>My Money</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
 
-<h2>Signup</h2>
-<input id="signupEmail" placeholder="email">
-<input id="signupPassword" placeholder="password">
-<button onclick="signup()">Signup</button>
+<h1>💰 My Money</h1>
 
-<h2>Login</h2>
-<input id="loginEmail" placeholder="email">
-<input id="loginPassword" placeholder="password">
-<button onclick="login()">Login</button>
+<div class="box">
+  <h2>Signup</h2>
+  <input id="sEmail" placeholder="Email">
+  <input id="sPass" type="password" placeholder="Password">
+  <button onclick="signup()">Signup</button>
 
-<h2>Balance: ₹ <span id="balance">0</span></h2>
+  <h2>Login</h2>
+  <input id="lEmail" placeholder="Email">
+  <input id="lPass" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
 
-<select id="type">
-<option value="income">Income</option>
-<option value="expense">Expense</option>
-</select>
+<div class="box">
+  <h2>Balance: ₹ <span id="balance">0</span></h2>
 
-<input id="amount" placeholder="amount">
-<input id="category" placeholder="category">
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
 
-<button onclick="add()">Add</button>
+  <input id="amount" placeholder="Amount">
+  <input id="category" placeholder="Category">
 
-<ul id="list"></ul>
+  <button onclick="add()">Add</button>
 
-<script src="script.js"></script>
+  <ul id="list"></ul>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
