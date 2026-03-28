@@ -1,6 +1,6 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-let userId = localStorage.getItem("userId");
+let token = localStorage.getItem("token");
 
 // Signup
 async function signup(){
@@ -8,13 +8,13 @@ async function signup(){
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      email:signupEmail.value,
-      password:signupPassword.value
+      email:sEmail.value,
+      password:sPass.value
     })
   });
 
   const data = await res.json();
-  alert(data.message);
+  alert(data.message || data.error);
 }
 
 // Login
@@ -23,35 +23,37 @@ async function login(){
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      email:loginEmail.value,
-      password:loginPassword.value
+      email:lEmail.value,
+      password:lPass.value
     })
   });
 
   const data = await res.json();
 
-  if(data.success){
-    userId = data.userId;
-    localStorage.setItem("userId", userId);
+  if(data.token){
+    token = data.token;
+    localStorage.setItem("token", token);
     alert("Login success");
     loadData();
   } else {
-    alert("Wrong email/password");
+    alert(data.error);
   }
 }
 
 // Add
 async function add(){
-  if(!userId){
+  if(!token){
     alert("Login first");
     return;
   }
 
   await fetch(API+"/add",{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
+    headers:{
+      "Content-Type":"application/json",
+      "authorization":token
+    },
     body:JSON.stringify({
-      userId,
       type:type.value,
       amount:Number(amount.value),
       category:category.value
@@ -63,23 +65,18 @@ async function add(){
 
 // Load Data
 async function loadData(){
-  if(!userId) return;
+  if(!token) return;
 
   // balance
   const b = await fetch(API+"/balance",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({userId})
+    headers:{authorization:token}
   });
-
   const bdata = await b.json();
   balance.innerText = bdata.balance;
 
-  // transactions
-  const res = await fetch(API+"/get",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({userId})
+  // list
+  const res = await fetch(API+"/transactions",{
+    headers:{authorization:token}
   });
 
   const data = await res.json();
