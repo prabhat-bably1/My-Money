@@ -1,48 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Money Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-
-  <!-- Chart.js -->
+  <title>My Money</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>💰 My Money Pro</h1>
+<h2>Signup</h2>
+<input id="signupEmail">
+<input id="signupPassword">
+<button onclick="signup()">Signup</button>
 
-<div class="tabs">
-  <button onclick="showTab('dashboard')">Dashboard</button>
-  <button onclick="showTab('history')">History</button>
-</div>
+<h2>Login</h2>
+<input id="loginEmail">
+<input id="loginPassword">
+<button onclick="login()">Login</button>
 
-<div id="dashboard">
-  <h2>Balance: ₹ <span id="balance">0</span></h2>
+<h2>Balance: ₹ <span id="balance">0</span></h2>
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+<select id="type">
+  <option value="income">Income</option>
+  <option value="expense">Expense</option>
+</select>
 
-  <input id="amount" placeholder="Amount">
-  <input id="category" placeholder="Category">
+<input id="amount">
+<input id="category">
+<button onclick="add()">Add</button>
 
-  <button onclick="add()">Add</button>
+<h2>History</h2>
+<ul id="list"></ul>
 
-  <canvas id="chart"></canvas>
-</div>
+<canvas id="chart"></canvas>
 
-<div id="history" style="display:none;">
-  <h2>Transactions</h2>
-  <ul id="list"></ul>
-</div>
-
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
-
 </html>
