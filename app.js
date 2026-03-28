@@ -60,11 +60,12 @@ async function add(){
       "authorization":token
     },
     body:JSON.stringify({
-      type:type.value,
-      amount:Number(amount.value),
-      category:category.value
-    })
-  });
+  type:type.value,
+  amount:Number(amount.value),
+  category:category.value,
+  note:note.value   // 🔥 ADD THIS
+})
+});
 
   loadData();
 }
@@ -89,7 +90,12 @@ async function loadData(){
 
   list.innerHTML = "";
   data.forEach(t=>{
-    list.innerHTML += `<li>₹${t.amount} - ${t.category}</li>`;
+    list.innerHTML += `
+  <li>
+    ₹${t.amount} - ${t.category}
+    <br>${t.note || ""}
+  </li>
+`;
   });
 }
 
