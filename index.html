@@ -1,39 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Money</title>
+  <title>My Money Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>💰 My Money</h1>
+<h1 class="title">💰 My Money Pro</h1>
 
-<div class="card">
-  <h2>Signup</h2>
-  <input id="signupEmail" placeholder="Email">
-  <input id="signupPassword" type="password" placeholder="Password">
-  <button id="signupBtn">Signup</button>
-</div>
+<div class="container">
 
-<div class="card">
-  <h2>Login</h2>
-  <input id="loginEmail" placeholder="Email">
-  <input id="loginPassword" type="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
-</div>
+  <!-- AUTH -->
+  <div class="card">
+    <h2>Signup</h2>
+    <input id="signupEmail" placeholder="Email">
+    <input id="signupPassword" type="password" placeholder="Password">
+    <button id="signupBtn">Signup</button>
 
-<div class="card">
-  <h2>Balance: ₹ <span id="balance">0</span></h2>
+    <h2>Login</h2>
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+  </div>
 
-  <select id="type">
-    <option>income</option>
-    <option>expense</option>
-  </select>
+  <!-- DASHBOARD -->
+  <div class="card">
+    <h2>Balance: ₹ <span id="balance">0</span></h2>
 
-  <input id="amount" placeholder="Amount">
-  <input id="category" placeholder="Category">
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-  <button id="addBtn">Add</button>
+    <input id="amount" placeholder="Amount">
+    <input id="category" placeholder="Category">
+
+    <button id="addBtn">Add Transaction</button>
+  </div>
+
+  <!-- CHART -->
+  <div class="card">
+    <h2>Analytics</h2>
+    <canvas id="chart"></canvas>
+  </div>
+
 </div>
 
 <script src="app.js"></script>
