@@ -33,7 +33,13 @@ async function login(){
   if(data.token){
     token = data.token;
     localStorage.setItem("token", token);
+
     alert("Login success");
+
+    // 🔥 NEW
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
     loadData();
   } else {
     alert(data.error);
@@ -89,3 +95,10 @@ async function loadData(){
 
 // Auto load
 window.onload = loadData;
+window.onload = () => {
+  if(token){
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    loadData();
+  }
+}
