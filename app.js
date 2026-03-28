@@ -1,23 +1,9 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
 let token = localStorage.getItem("token");
+let chart;
 
-// Signup
-async function signup(){
-  const res = await fetch(API+"/signup",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      email:sEmail.value,
-      password:sPass.value
-    })
-  });
-
-  const data = await res.json();
-  alert(data.message || data.error);
-}
-
-// Login
+// LOGIN
 async function login(){
   const res = await fetch(API+"/login",{
     method:"POST",
@@ -34,25 +20,23 @@ async function login(){
     token = data.token;
     localStorage.setItem("token", token);
 
-    alert("Login success");
-
-    // 🔥 NEW
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("app").style.display = "block";
+    auth.style.display="none";
+    app.style.display="block";
 
     loadData();
   } else {
-    alert(data.error);
+    alert("Login failed");
   }
 }
 
-// Add
-async function add(){
-  if(!token){
-    alert("Login first");
-    return;
-  }
+// LOGOUT
+function logout(){
+  localStorage.removeItem("token");
+  location.reload();
+}
 
+// ADD
+async function add(){
   await fetch(API+"/add",{
     method:"POST",
     headers:{
@@ -60,51 +44,71 @@ async function add(){
       "authorization":token
     },
     body:JSON.stringify({
-  type:type.value,
-  amount:Number(amount.value),
-  category:category.value,
-  note:note.value   // 🔥 ADD THIS
-})
-});
+      type:type.value,
+      amount:Number(amount.value),
+      category:category.value,
+      note:note.value
+    })
+  });
 
   loadData();
 }
 
-// Load Data
+// LOAD DATA
 async function loadData(){
-  if(!token) return;
 
-  // balance
-  const b = await fetch(API+"/balance",{
-    headers:{authorization:token}
-  });
-  const bdata = await b.json();
-  balance.innerText = bdata.balance;
-
-  // list
   const res = await fetch(API+"/transactions",{
     headers:{authorization:token}
   });
 
   const data = await res.json();
 
-  list.innerHTML = "";
+  let income=0, expense=0;
+  list.innerHTML="";
+
   data.forEach(t=>{
+    if(t.type==="income") income+=t.amount;
+    else expense+=t.amount;
+
     list.innerHTML += `
-  <li>
-    ₹${t.amount} - ${t.category}
-    <br>${t.note || ""}
-  </li>
-`;
+      <li>
+        ₹${t.amount} - ${t.category}
+        <br>${t.note || ""}
+      </li>
+    `;
+  });
+
+  balance.innerText = income - expense;
+  incomeEl = document.getElementById("income");
+  expenseEl = document.getElementById("expense");
+
+  incomeEl.innerText = income;
+  expenseEl.innerText = expense;
+
+  drawChart(income, expense);
+}
+
+// CHART
+function drawChart(income, expense){
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: 'doughnut',
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{
+        data: [income, expense]
+      }]
+    }
   });
 }
 
-// Auto load
-window.onload = loadData;
-window.onload = () => {
+// AUTO LOGIN
+window.onload = ()=>{
   if(token){
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("app").style.display = "block";
+    auth.style.display="none";
+    app.style.display="block";
     loadData();
   }
-}
+};
