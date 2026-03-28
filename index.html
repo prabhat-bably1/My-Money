@@ -1,41 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Money</title>
-  <link rel="stylesheet" href="style.css">
+  <title>My Money Pro</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body{
+      font-family: Arial;
+      background:#0f172a;
+      color:white;
+      margin:0;
+      text-align:center;
+    }
+
+    h1{margin:20px;}
+
+    .card{
+      background:#1e293b;
+      padding:20px;
+      margin:10px;
+      border-radius:12px;
+    }
+
+    input,select,button{
+      padding:10px;
+      margin:10px;
+      width:80%;
+      border-radius:8px;
+      border:none;
+    }
+
+    button{
+      background:#22c55e;
+      color:white;
+      font-weight:bold;
+    }
+
+    .logout{
+      background:#ef4444;
+    }
+
+    .cards{
+      display:flex;
+      justify-content:space-around;
+      flex-wrap:wrap;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>💰 My Money</h1>
+<h1>💰 My Money PRO</h1>
 
-<div class="box" id="auth">
-  <h2>Signup</h2>
-  <input id="sEmail" placeholder="Email">
-  <input id="sPass" type="password" placeholder="Password">
-  <button onclick="signup()">Signup</button>
-
+<!-- LOGIN -->
+<div id="auth" class="card">
   <h2>Login</h2>
   <input id="lEmail" placeholder="Email">
   <input id="lPass" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<div class="box" id="app" style="display:none;">
-  <h2>Balance: ₹ <span id="balance">0</span></h2>
+<!-- DASHBOARD -->
+<div id="app" style="display:none;">
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+  <button class="logout" onclick="logout()">Logout</button>
 
-  <input id="amount" placeholder="Amount">
-  <input id="category" placeholder="Category">
-  <input id="note" placeholder="Note">
+  <div class="cards">
+    <div class="card">Balance ₹ <span id="balance">0</span></div>
+    <div class="card">Income ₹ <span id="income">0</span></div>
+    <div class="card">Expense ₹ <span id="expense">0</span></div>
+  </div>
 
-  <button onclick="add()">Add</button>
+  <div class="card">
+    <h3>Add Transaction</h3>
 
-  <ul id="list"></ul>
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+
+    <input id="amount" placeholder="Amount">
+    <input id="category" placeholder="Category">
+    <input id="note" placeholder="Note">
+
+    <button onclick="add()">Add</button>
+  </div>
+
+  <div class="card">
+    <h3>Chart</h3>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>History</h3>
+    <ul id="list"></ul>
+  </div>
+
 </div>
 
 <script src="app.js"></script>
