@@ -12,49 +12,37 @@
 
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1 class="title">💰 My Money Pro</h1>
+<h1>💰 My Money Pro</h1>
 
-<div class="container">
+<div class="tabs">
+  <button onclick="showTab('dashboard')">Dashboard</button>
+  <button onclick="showTab('history')">History</button>
+</div>
 
-  <!-- AUTH -->
-  <div class="card">
-    <h2>Signup</h2>
-    <input id="signupEmail" placeholder="Email">
-    <input id="signupPassword" type="password" placeholder="Password">
-    <button id="signupBtn">Signup</button>
+<div id="dashboard">
+  <h2>Balance: ₹ <span id="balance">0</span></h2>
 
-    <h2>Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
-  </div>
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
 
-  <!-- DASHBOARD -->
-  <div class="card">
-    <h2>Balance: ₹ <span id="balance">0</span></h2>
+  <input id="amount" placeholder="Amount">
+  <input id="category" placeholder="Category">
 
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
+  <button onclick="add()">Add</button>
 
-    <input id="amount" placeholder="Amount">
-    <input id="category" placeholder="Category">
+  <canvas id="chart"></canvas>
+</div>
 
-    <button id="addBtn">Add Transaction</button>
-  </div>
-
-  <!-- CHART -->
-  <div class="card">
-    <h2>Analytics</h2>
-    <canvas id="chart"></canvas>
-  </div>
-
+<div id="history" style="display:none;">
+  <h2>Transactions</h2>
+  <ul id="list"></ul>
 </div>
 
 <script src="app.js"></script>
 </body>
+
 </html>
