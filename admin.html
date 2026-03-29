@@ -13,7 +13,11 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
 async function loadUsers(){
-  const res = await fetch(API+"/admin/users");
+  const res = await fetch(API+"/admin/users", {
+    headers: {
+        "admin": "secret123"
+    }
+});
   const users = await res.json();
 
   data.innerHTML="";
@@ -23,7 +27,11 @@ async function loadUsers(){
 }
 
 async function loadTransactions(){
-  const res = await fetch(API+"/admin/transactions");
+  const res = await fetch(API+"/admin/transactions", {
+    headers: {
+        "admin": "secret123"
+    }
+});
   const t = await res.json();
 
   data.innerHTML="";
