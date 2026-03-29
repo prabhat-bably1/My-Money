@@ -5,7 +5,14 @@ let token = localStorage.getItem("token") || "";
 // ================= AUTH UI =================
 function showApp(){
   document.getElementById("auth").style.display = "none";
-  document.getElementById("app").style.display = "block";
+
+  const app = document.getElementById("app");
+  app.style.display = "block";
+  app.style.opacity = 0;
+
+  setTimeout(()=>{
+    app.style.opacity = 1;
+  },100);
 }
 
 // ================= SIGNUP =================
