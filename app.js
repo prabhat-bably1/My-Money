@@ -1,123 +1,167 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-let token = localStorage.getItem("token");
-let chart;
+let token = localStorage.getItem("token") || "";
 
-// LOGIN
-async function login(){
-  const res = await fetch(API+"/login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      email:lEmail.value,
-      password:lPass.value
-    })
-  });
-
-  const data = await res.json();
-
-  if(data.token){
-  localStorage.setItem("token", data.token);
-  showApp();   // 👈 add this
-  loadData();
-  }
-
-    auth.style.display="none";
-    app.style.display="block";
-
-    loadData();
-  } else {
-    alert("Login failed");
-  }
-}
+// ================= AUTH UI =================
 function showApp(){
   document.getElementById("auth").style.display = "none";
   document.getElementById("app").style.display = "block";
 }
-// LOGOUT
+
+// ================= SIGNUP =================
+async function signup(){
+  try{
+    const res = await fetch(API + "/signup",{
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: document.getElementById("sEmail").value,
+        password: document.getElementById("sPass").value
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.message){
+      alert("Signup Success ✅");
+    }else{
+      alert(data.error || "Signup Failed ❌");
+    }
+
+  }catch(err){
+    alert("Server Error ❌");
+  }
+}
+
+// ================= LOGIN =================
+async function login(){
+  try{
+    const res = await fetch(API + "/login",{
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: document.getElementById("lEmail").value,
+        password: document.getElementById("lPass").value
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.token){
+      token = data.token;
+      localStorage.setItem("token", token);
+
+      alert("Login Success ✅");
+
+      showApp();
+      loadData();
+    }else{
+      alert(data.error || "Login Failed ❌");
+    }
+
+  }catch(err){
+    alert("Server Error ❌");
+  }
+}
+
+// ================= LOGOUT =================
 function logout(){
   localStorage.removeItem("token");
   location.reload();
 }
 
-// ADD
-async function add(){
-  await fetch(API+"/add",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "authorization":token
-    },
-    body:JSON.stringify({
-      type:type.value,
-      amount:Number(amount.value),
-      category:category.value,
-      note:note.value
-    })
-  });
+// ================= LOAD DATA =================
+async function loadData(){
+  try{
+    const res = await fetch(API + "/transactions",{
+      headers:{ authorization: token }
+    });
 
-  loadData();
+    const data = await res.json();
+
+    let total = 0;
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(t=>{
+      if(t.type === "income") total += t.amount;
+      else total -= t.amount;
+
+      list.innerHTML += `
+        <li>
+          ₹${t.amount} - ${t.category} <br>
+          <small>${t.note || ""}</small>
+        </li>
+      `;
+    });
+
+    document.getElementById("balance").innerText = total;
+
+    drawChart(data);
+
+  }catch(err){
+    alert("Error loading data ❌");
+  }
 }
 
-// LOAD DATA
-async function loadData(){
+// ================= ADD TRANSACTION =================
+async function add(){
+  try{
+    const res = await fetch(API + "/add",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        authorization: token
+      },
+      body: JSON.stringify({
+        type: document.getElementById("type").value,
+        amount: Number(document.getElementById("amount").value),
+        category: document.getElementById("category").value,
+        note: document.getElementById("note").value
+      })
+    });
 
-  const res = await fetch(API+"/transactions",{
-    headers:{authorization:token}
-  });
+    const data = await res.json();
 
-  const data = await res.json();
-  drawChart(data);
+    if(data.message){
+      alert("Added ✅");
+      loadData();
+    }else{
+      alert(data.error || "Error ❌");
+    }
 
-  let income=0, expense=0;
-  list.innerHTML="";
+  }catch(err){
+    alert("Server Error ❌");
+  }
+}
+
+// ================= CHART =================
+let chart;
+
+function drawChart(data){
+  let income = 0;
+  let expense = 0;
 
   data.forEach(t=>{
-    if(t.type==="income") income+=t.amount;
-    else expense+=t.amount;
-
-    list.innerHTML += `
-      <li>
-        ₹${t.amount} - ${t.category}
-        <br>${t.note || ""}
-      </li>
-    `;
+    if(t.type === "income") income += t.amount;
+    else expense += t.amount;
   });
-
-  balance.innerText = income - expense;
-  incomeEl = document.getElementById("income");
-  expenseEl = document.getElementById("expense");
-
-  incomeEl.innerText = income;
-  expenseEl.innerText = expense;
-
-  drawChart(income, expense);
-}
-
-// CHART
-function drawChart(income, expense){
 
   if(chart) chart.destroy();
 
   chart = new Chart(document.getElementById("chart"), {
-    type: 'doughnut',
+    type: "doughnut",
     data: {
-      labels: ["Income", "Expense"],
+      labels: ["Income","Expense"],
       datasets: [{
-        data: [income, expense]
+        data: [income, expense],
+        backgroundColor: ["#22c55e","#ef4444"]
       }]
     }
   });
 }
 
-// AUTO LOGIN
-window.onload = ()=>{
-  if(token){
-    auth.style.display="none";
-    app.style.display="block";
-    loadData();
-  }
-};
+// ================= PDF EXPORT =================
 async function downloadPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -152,39 +196,25 @@ async function downloadPDF(){
 
   doc.save("report.pdf");
 }
-let chart;
 
-function drawChart(data){
-  let income = 0;
-  let expense = 0;
-
-  data.forEach(t=>{
-    if(t.type === "income") income += t.amount;
-    else expense += t.amount;
-  });
-
-  if(chart) chart.destroy();
-
-  chart = new Chart(document.getElementById("chart"), {
-    type: "doughnut",
-    data: {
-      labels: ["Income","Expense"],
-      datasets: [{
-        data: [income, expense]
-      }]
-    }
-  });
-}
+// ================= PWA INSTALL =================
 let deferredPrompt;
 
 window.addEventListener("beforeinstallprompt", (e)=>{
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById("installBtn").style.display = "block";
+  const btn = document.getElementById("installBtn");
+  if(btn) btn.style.display = "block";
 });
 
-document.getElementById("installBtn").addEventListener("click", async ()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = document.getElementById("installBtn");
+
+  if(btn){
+    btn.addEventListener("click", async ()=>{
+      if(deferredPrompt){
+        deferredPrompt.prompt();
+      }
+    });
   }
 });
