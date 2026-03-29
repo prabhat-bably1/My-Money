@@ -17,8 +17,10 @@ async function login(){
   const data = await res.json();
 
   if(data.token){
-    token = data.token;
-    localStorage.setItem("token", token);
+  localStorage.setItem("token", data.token);
+  showApp();   // 👈 add this
+  loadData();
+  }
 
     auth.style.display="none";
     app.style.display="block";
@@ -28,7 +30,10 @@ async function login(){
     alert("Login failed");
   }
 }
-
+function showApp(){
+  document.getElementById("auth").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
 // LOGOUT
 function logout(){
   localStorage.removeItem("token");
