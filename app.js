@@ -233,3 +233,6 @@ window.onload = function(){
     loadData();
   }
 };
+app.get("/", (req, res) => {
+  res.send("Backend Running 🚀");
+});
