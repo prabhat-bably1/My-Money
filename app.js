@@ -95,15 +95,14 @@ async function loadData(){
       else total -= t.amount;
 
       list.innerHTML += `
-        <li>
-          ₹${t.amount} - ${t.category} <br>
-          <small>${t.note || ""}</small>
-        </li>
-      `;
-    });
+  <li style="animation: fadeIn 0.4s ease;">
+    ₹${t.amount} - ${t.category} <br>
+    <small>${t.note || ""}</small>
+  </li>
+`;
 
     document.getElementById("balance").innerText = total;
-
+    document.getElementById("balance").style.transition = "0.3s";
     drawChart(data);
 
   }catch(err){
