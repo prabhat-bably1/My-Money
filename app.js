@@ -142,3 +142,27 @@ async function downloadPDF(){
 
   doc.save("report.pdf");
 }
+let chart;
+
+function drawChart(data){
+  let income = 0;
+  let expense = 0;
+
+  data.forEach(t=>{
+    if(t.type === "income") income += t.amount;
+    else expense += t.amount;
+  });
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Income","Expense"],
+      datasets: [{
+        data: [income, expense],
+        backgroundColor: ["#22c55e","#ef4444"]
+      }]
+    }
+  });
+}
