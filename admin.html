@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Admin Panel</h1>
+
+<button onclick="loadUsers()">Users</button>
+<button onclick="loadTransactions()">Transactions</button>
+
+<ul id="data"></ul>
+
+<script>
+const API = "https://my-money-backend-dq7n.onrender.com";
+
+async function loadUsers(){
+  const res = await fetch(API+"/admin/users");
+  const users = await res.json();
+
+  data.innerHTML="";
+  users.forEach(u=>{
+    data.innerHTML += `<li>${u.email}</li>`;
+  });
+}
+
+async function loadTransactions(){
+  const res = await fetch(API+"/admin/transactions");
+  const t = await res.json();
+
+  data.innerHTML="";
+  t.forEach(x=>{
+    data.innerHTML += `<li>${x.type} ₹${x.amount}</li>`;
+  });
+}
+</script>
+
+</body>
+</html>
