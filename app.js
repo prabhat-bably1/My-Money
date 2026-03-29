@@ -112,3 +112,28 @@ window.onload = ()=>{
     loadData();
   }
 };
+async function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const res = await fetch(API+"/transactions",{
+    headers:{authorization:token}
+  });
+
+  const data = await res.json();
+
+  let y = 10;
+  doc.text("My Money Report", 10, y);
+  y += 10;
+
+  data.forEach(t=>{
+    doc.text(
+      `${t.type} ₹${t.amount} - ${t.category} (${t.note || ""})`,
+      10,
+      y
+    );
+    y += 10;
+  });
+
+  doc.save("report.pdf");
+}
