@@ -2,25 +2,105 @@
 <html>
 <head>
   <title>MoneyFlow</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- META -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CHART -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- STYLE -->
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+    }
+
+    .center {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #22c55e;
+      border: none;
+      color: white;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: #1e293b;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #1e293b;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    canvas {
+      margin-top: 15px;
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN / SIGNUP -->
 <div id="auth" class="center">
   <div class="card">
     <h2>💰 MoneyFlow</h2>
 
+    <h3>Login</h3>
     <input id="lEmail" placeholder="Email">
     <input id="lPass" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
 
-    <p>or</p>
-
+    <h3>Signup</h3>
     <input id="sEmail" placeholder="Email">
     <input id="sPass" type="password" placeholder="Password">
     <button onclick="signup()">Signup</button>
@@ -32,45 +112,39 @@
 
   <header>
     <h2>📊 Dashboard</h2>
-    <button id="installBtn" style="display:none;">Install App</button>
+    <button id="installBtn" style="display:none;">Install</button>
     <button onclick="logout()">Logout</button>
   </header>
 
   <div class="container">
 
-    <!-- BALANCE -->
-    <div class="card big">
-      <h3>Total Balance</h3>
-      <h1>₹ <span id="balance">0</span></h1>
-    </div>
+    <h3>Balance: ₹ <span id="balance">0</span></h3>
 
-    <!-- ADD TRANSACTION -->
-    <div class="card">
-      <h3>Add Transaction</h3>
+    <h3>Add Transaction</h3>
 
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-      <input id="amount" placeholder="Amount">
-      <input id="category" placeholder="Category (Food, Travel)">
-      <input id="note" placeholder="Note (optional)">
+    <input id="amount" placeholder="Amount">
+    <input id="category" placeholder="Category">
+    <input id="note" placeholder="Note">
 
-      <button onclick="add()">Add</button>
-    </div>
+    <button onclick="add()">Add</button>
+    <button onclick="downloadPDF()">Download PDF</button>
 
-    <!-- LIST -->
-    <div class="card">
-      <h3>Transactions</h3>
-      <ul id="list"></ul>
-      <canvas id="chart"></canvas>
-    </div>
+    <h3>Transactions</h3>
+    <ul id="list"></ul>
+
+    <!-- CHART -->
+    <canvas id="chart"></canvas>
 
   </div>
 
 </div>
 
+<!-- SCRIPT -->
 <script src="app.js"></script>
 
 </body>
