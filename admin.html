@@ -1,44 +1,183 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Admin Panel - MyMoney</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+    }
+
+    header {
+      padding: 15px;
+      background: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      margin: 5px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 200px;
+      text-align: center;
+    }
+
+    ul {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
 <body>
 
-<h1>Admin Panel</h1>
+<header>
+  <h2>🔥 Admin Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+</header>
 
-<button onclick="loadUsers()">Users</button>
-<button onclick="loadTransactions()">Transactions</button>
+<div class="container">
 
-<ul id="data"></ul>
+  <!-- STATS -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <h2 id="usersCount">0</h2>
+    </div>
+
+    <div class="card">
+      <h3>Total Transactions</h3>
+      <h2 id="txCount">0</h2>
+    </div>
+
+    <div class="card">
+      <h3>Total Amount</h3>
+      <h2 id="totalAmount">₹0</h2>
+    </div>
+  </div>
+
+  <br>
+
+  <!-- CHART -->
+  <canvas id="chart" height="100"></canvas>
+
+  <br>
+
+  <!-- BUTTONS -->
+  <button onclick="loadUsers()">Load Users</button>
+  <button onclick="loadTransactions()">Load Transactions</button>
+
+  <br><br>
+
+  <!-- DATA -->
+  <ul id="data"></ul>
+
+</div>
 
 <script>
 const API = "https://my-money-backend-dq7n.onrender.com";
+const ADMIN_KEY = "secret123";
 
-async function loadUsers(){
-  const res = await fetch(API+"/admin/users", {
-    headers: {
-        "admin": "secret123"
-    }
-});
+let chart;
+
+// USERS
+async function loadUsers() {
+  const res = await fetch(API + "/admin/users", {
+    headers: { "admin": ADMIN_KEY }
+  });
+
   const users = await res.json();
 
-  data.innerHTML="";
-  users.forEach(u=>{
-    data.innerHTML += `<li>${u.email}</li>`;
+  usersCount.innerText = users.length;
+
+  data.innerHTML = "";
+  users.forEach(u => {
+    data.innerHTML += `<li>👤 ${u.email}</li>`;
   });
 }
 
-async function loadTransactions(){
-  const res = await fetch(API+"/admin/transactions", {
-    headers: {
-        "admin": "secret123"
+// TRANSACTIONS
+async function loadTransactions() {
+  const res = await fetch(API + "/admin/transactions", {
+    headers: { "admin": ADMIN_KEY }
+  });
+
+  const tx = await res.json();
+
+  txCount.innerText = tx.length;
+
+  let total = 0;
+  let income = 0;
+  let expense = 0;
+
+  data.innerHTML = "";
+
+  tx.forEach(t => {
+    total += t.amount;
+
+    if (t.type === "income") income += t.amount;
+    else expense += t.amount;
+
+    data.innerHTML += `
+      <li>
+        💰 ${t.type} ₹${t.amount} - ${t.category}
+      </li>`;
+  });
+
+  totalAmount.innerText = "₹" + total;
+
+  drawChart(income, expense);
+}
+
+// CHART
+function drawChart(income, expense) {
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{
+        data: [income, expense],
+        backgroundColor: ["#22c55e", "#ef4444"]
+      }]
     }
-});
-  const t = await res.json();
-
-  data.innerHTML="";
-  t.forEach(x=>{
-    data.innerHTML += `<li>${x.type} ₹${x.amount}</li>`;
   });
 }
+
+// LOGOUT
+function logout() {
+  alert("Admin logout");
+  location.reload();
+}
+
 </script>
 
 </body>
