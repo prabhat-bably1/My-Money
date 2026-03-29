@@ -224,3 +224,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   }
 });
+window.onload = function(){
+  const savedToken = localStorage.getItem("token");
+
+  if(savedToken){
+    token = savedToken;
+    showApp();
+    loadData();
+  }
+};
