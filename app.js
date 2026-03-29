@@ -67,6 +67,7 @@ async function loadData(){
   });
 
   const data = await res.json();
+  drawChart(data);
 
   let income=0, expense=0;
   list.innerHTML="";
@@ -169,8 +170,7 @@ function drawChart(data){
     data: {
       labels: ["Income","Expense"],
       datasets: [{
-        data: [income, expense],
-        backgroundColor: ["#22c55e","#ef4444"]
+        data: [income, expense]
       }]
     }
   });
