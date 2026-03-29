@@ -127,18 +127,27 @@ async function downloadPDF(){
 
   const data = await res.json();
 
-  let y = 10;
-  doc.text("My Money Report", 10, y);
-  y += 10;
+  doc.setFontSize(18);
+  doc.text("MoneyFlow Report", 10, 10);
+
+  let y = 20;
+  let total = 0;
 
   data.forEach(t=>{
+    total += t.amount;
+
+    doc.setFontSize(12);
     doc.text(
-      `${t.type} ₹${t.amount} - ${t.category} (${t.note || ""})`,
+      `${t.type.toUpperCase()} - ₹${t.amount} | ${t.category}`,
       10,
       y
     );
-    y += 10;
+
+    y += 8;
   });
+
+  doc.setFontSize(14);
+  doc.text("Total: ₹" + total, 10, y+10);
 
   doc.save("report.pdf");
 }
