@@ -1,25 +1,85 @@
-body{
-  font-family: Arial;
-  background:#111;
-  color:white;
-  text-align:center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.box{
-  background:#222;
-  padding:20px;
-  margin:20px;
-  border-radius:10px;
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
 }
 
-input,select,button{
-  display:block;
-  width:90%;
-  margin:10px auto;
-  padding:10px;
+/* CENTER LOGIN */
+.center {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-button{
-  background:green;
-  color:white;
+/* CARD */
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  margin: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.big {
+  text-align: center;
+}
+
+/* INPUT */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(45deg, #22c55e, #16a34a);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+}
+
+/* CONTAINER */
+.container {
+  padding: 20px;
+}
+
+/* LIST */
+ul {
+  list-style: none;
+}
+
+li {
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
 }
