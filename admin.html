@@ -130,8 +130,15 @@
 </div>
 
 <script>
+  const TOKEN = localStorage.getItem("token");
+
+if (!TOKEN) {
+  alert("Login first!");
+  location.href = "admin-login.html";
+}
+  
 const API = "https://my-money-backend-dq7n.onrender.com";
-const ADMIN_KEY = "secret123";
+
 
 let chart;
 let allTx = [];
@@ -139,7 +146,7 @@ let allTx = [];
 // USERS
 async function loadUsers() {
   const res = await fetch(API + "/admin/users", {
-    headers: { admin: ADMIN_KEY }
+    headers: { authorization: TOKEN }
   });
 
   const users = await res.json();
@@ -154,7 +161,7 @@ async function loadUsers() {
 // TRANSACTIONS
 async function loadTransactions() {
   const res = await fetch(API + "/admin/transactions", {
-    headers: { admin: ADMIN_KEY }
+    headers: { authorization: TOKEN }
   });
 
   let tx = await res.json();
@@ -202,7 +209,7 @@ async function loadTransactions() {
 async function deleteTx(id) {
   await fetch(API + "/admin/delete/" + id, {
     method: "DELETE",
-    headers: { admin: ADMIN_KEY }
+    headers: { authorization: TOKEN }
   });
   loadTransactions();
 }
@@ -213,7 +220,7 @@ async function deleteAll() {
 
   await fetch(API + "/admin/delete-all", {
     method: "DELETE",
-    headers: { admin: ADMIN_KEY }
+    headers: { authorization: TOKEN }
   });
 
   alert("All history deleted!");
@@ -253,9 +260,18 @@ function drawChart(income, expense) {
 
 // LOGOUT
 function logout() {
-  alert("Logged out");
-  location.reload();
+  localStorage.removeItem("token");
+  location.href = "admin-login.html";
 }
+  window.onload = () => {
+  loadUsers();
+  loadTransactions();
+};
+
+
+  document.getElementById("search").addEventListener("input", loadTransactions);
+
+
 </script>
 
 </body>
