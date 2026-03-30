@@ -275,6 +275,19 @@ function logout() {
 
   document.getElementById("search").addEventListener("input", loadTransactions);
 
+  async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+
+  await fetch(API + "/admin/delete-user/" + id, {
+    method: "DELETE",
+    headers: {
+      authorization: TOKEN
+    }
+  });
+
+  alert("User deleted");
+  loadUsers();
+  }
 
 </script>
 
