@@ -64,35 +64,27 @@ function logout(){
 
 // ================= LOAD DATA =================
 async function loadData(){
-  try{
-    const res = await fetch(API + "/transactions",{
-      headers:{ authorization: token }
-    });
+  const res = await fetch(API+"/transactions",{
+    headers:{authorization:token}
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    let total = 0;
-    let list = document.getElementById("list");
-    list.innerHTML = "";
+  let total = 0;
+  list.innerHTML = "";
 
-    data.forEach(t=>{
-      if(t.type === "income") total += t.amount;
-      else total -= t.amount;
+  data.forEach(t=>{
+    if(t.type==="income") total += t.amount;
+    else total -= t.amount;
 
-      list.innerHTML += `
-  <li style="animation: fadeIn 0.4s ease;">
-    ₹${t.amount} - ${t.category} <br>
-    <small>${t.note || ""}</small>
-  </li>
-`;
+    list.innerHTML += `<li>₹${t.amount} - ${t.category}</li>`;
+  });
 
-    document.getElementById("balance").innerText = total;
-    document.getElementById("balance").style.transition = "0.3s";
-    drawChart(data);
+  balance.innerText = "₹"+total;
 
-  }catch(err){
-    alert("Error loading data ❌");
-  }
+  // 🔥 YAHI ADD KARNA HAI
+  drawChart(data);
+
 }
 
 // ================= ADD TRANSACTION =================
