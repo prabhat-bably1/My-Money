@@ -16,61 +16,46 @@ function showApp(){
 }
 
 // ================= SIGNUP =================
-async function signup(){
-  try{
-    const res = await fetch(API + "/signup",{
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        email: document.getElementById("sEmail").value,
-        password: document.getElementById("sPass").value
-      })
-    });
+app.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
 
-    const data = await res.json();
+  try {
+    const exist = await User.findOne({ email });
 
-    if(data.message){
-      alert("Signup Success ✅");
-    }else{
-      alert(data.error || "Signup Failed ❌");
+    if (exist) {
+      return res.json({ error: "User already exists" });
     }
 
-  }catch(err){
-    alert("Server Error ❌");
+    await User.create({ email, password });
+
+    res.json({ message: "Signup success" });
+  } catch (err) {
+    res.json({ error: "Signup failed" });
   }
-}
+});
 
 // ================= LOGIN =================
-async function login(){
-  try{
-    const res = await fetch(API + "/login",{
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        email: document.getElementById("lEmail").value,
-        password: document.getElementById("lPass").value
-      })
-    });
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-    const data = await res.json();
+  try {
+    const user = await User.findOne({ email });
 
-    if(data.token){
-      token = data.token;
-      localStorage.setItem("token", token);
-
-      alert("Login Success ✅");
-
-      showApp();
-      loadData();
-    }else{
-      alert(data.error || "Login Failed ❌");
+    if (!user) {
+      return res.json({ error: "User not found" });
     }
 
-  }catch(err){
-    alert("Server Error ❌");
-  }
-}
+    if (user.password !== password) {
+      return res.json({ error: "Wrong password" });
+    }
 
+    const token = jwt.sign({ id: user._id }, SECRET);
+
+    res.json({ token });
+  } catch (err) {
+    res.json({ error: "Server error" });
+  }
+});
 // ================= LOGOUT =================
 function logout(){
   localStorage.removeItem("token");
