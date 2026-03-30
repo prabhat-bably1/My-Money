@@ -1,144 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Money 💸</title>
+  <title>MoneyFlow 💸</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg,#0f172a,#020617);
+      color: white;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #22c55e;
+      border: none;
+      color: white;
+      margin-top: 5px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+    }
+  </style>
 </head>
-<body style="font-family:sans-serif; text-align:center;">
 
-<h2>My Money App 💰</h2>
+<body>
 
-<!-- AUTH -->
-<div id="auth">
-  <h3>Signup</h3>
-  <input id="sEmail" placeholder="Email"><br><br>
-  <input id="sPass" placeholder="Password"><br><br>
+<div id="auth" class="card">
+  <h2>MoneyFlow 💰</h2>
+
+  <input id="sEmail" placeholder="Signup Email">
+  <input id="sPass" placeholder="Password">
   <button onclick="signup()">Signup</button>
 
-  <h3>Login</h3>
-  <input id="lEmail" placeholder="Email"><br><br>
-  <input id="lPass" placeholder="Password"><br><br>
+  <hr>
+
+  <input id="lEmail" placeholder="Login Email">
+  <input id="lPass" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<!-- APP -->
 <div id="app" style="display:none;">
-  <h3 id="balance">Balance: ₹0</h3>
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select><br><br>
+  <header>
+    <h3>Dashboard</h3>
+    <button onclick="logout()">Logout</button>
+  </header>
 
-  <input id="amount" placeholder="Amount"><br><br>
-  <input id="category" placeholder="Category"><br><br>
-  <input id="note" placeholder="Note"><br><br>
+  <div class="card">
+    <h2 id="balance">₹0</h2>
+  </div>
 
-  <button onclick="add()">Add</button>
-  <button onclick="logout()">Logout</button>
+  <div class="card">
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-  <ul id="list"></ul>
+    <input id="amount" placeholder="Amount">
+    <input id="category" placeholder="Category">
+    <input id="note" placeholder="Note">
+    <input id="date" type="date">
+
+    <button onclick="add()">Add</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <div class="card">
+    <h3>Filter by Date</h3>
+    <input type="date" id="filterDate">
+    <button onclick="filterByDate()">Filter</button>
+  </div>
+
+  <div class="card">
+    <ul id="list"></ul>
+  </div>
+
+  <div class="card">
+    <canvas id="chart"></canvas>
+  </div>
+
 </div>
 
-<script>
-const API = "https://my-money-backend-dq7n.onrender.com";
-let token = localStorage.getItem("token") || "";
-
-// SHOW APP
-function showApp(){
-  document.getElementById("auth").style.display="none";
-  document.getElementById("app").style.display="block";
-}
-
-// SIGNUP
-async function signup(){
-  const res = await fetch(API+"/signup",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      email: sEmail.value,
-      password: sPass.value
-    })
-  });
-
-  const data = await res.json();
-  alert(data.message || data.error);
-}
-
-// LOGIN
-async function login(){
-  const res = await fetch(API+"/login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      email: lEmail.value,
-      password: lPass.value
-    })
-  });
-
-  const data = await res.json();
-
-  if(data.token){
-    token = data.token;
-    localStorage.setItem("token", token);
-    showApp();
-    loadData();
-  }else{
-    alert(data.error);
-  }
-}
-
-// LOAD DATA
-async function loadData(){
-  const res = await fetch(API+"/transactions",{
-    headers:{authorization:token}
-  });
-
-  const data = await res.json();
-
-  let total = 0;
-  list.innerHTML="";
-
-  data.forEach(t=>{
-    if(t.type==="income") total += t.amount;
-    else total -= t.amount;
-
-    list.innerHTML += `<li>₹${t.amount} - ${t.category}</li>`;
-  });
-
-  balance.innerText = "Balance: ₹"+total;
-}
-
-// ADD
-async function add(){
-  await fetch(API+"/add",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      authorization:token
-    },
-    body: JSON.stringify({
-      type:type.value,
-      amount:Number(amount.value),
-      category:category.value,
-      note:note.value
-    })
-  });
-
-  loadData();
-}
-
-// LOGOUT
-function logout(){
-  localStorage.removeItem("token");
-  location.reload();
-}
-
-// AUTO LOGIN
-if(token){
-  showApp();
-  loadData();
-}
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
