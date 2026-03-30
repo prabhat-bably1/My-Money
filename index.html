@@ -1,151 +1,144 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MoneyFlow</title>
-
-  <!-- META -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- CHART -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- STYLE -->
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-    }
-
-    .center {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      width: 300px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 6px;
-      border: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #22c55e;
-      border: none;
-      color: white;
-      margin-top: 5px;
-      cursor: pointer;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px;
-      background: #1e293b;
-    }
-
-    .container {
-      padding: 15px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      background: #1e293b;
-      margin: 5px 0;
-      padding: 10px;
-      border-radius: 6px;
-    }
-
-    canvas {
-      margin-top: 15px;
-      background: #1e293b;
-      padding: 10px;
-      border-radius: 10px;
-    }
-  </style>
+  <title>My Money 💸</title>
 </head>
+<body style="font-family:sans-serif; text-align:center;">
 
-<body>
+<h2>My Money App 💰</h2>
 
-<!-- LOGIN / SIGNUP -->
-<div id="auth" class="center">
-  <div class="card">
-    <h2>💰 MoneyFlow</h2>
+<!-- AUTH -->
+<div id="auth">
+  <h3>Signup</h3>
+  <input id="sEmail" placeholder="Email"><br><br>
+  <input id="sPass" placeholder="Password"><br><br>
+  <button onclick="signup()">Signup</button>
 
-    <h3>Login</h3>
-    <input id="lEmail" placeholder="Email">
-    <input id="lPass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-
-    <h3>Signup</h3>
-    <input id="sEmail" placeholder="Email">
-    <input id="sPass" type="password" placeholder="Password">
-    <button onclick="signup()">Signup</button>
-  </div>
+  <h3>Login</h3>
+  <input id="lEmail" placeholder="Email"><br><br>
+  <input id="lPass" placeholder="Password"><br><br>
+  <button onclick="login()">Login</button>
 </div>
 
-<!-- DASHBOARD -->
+<!-- APP -->
 <div id="app" style="display:none;">
+  <h3 id="balance">Balance: ₹0</h3>
 
-  <header>
-    <h2>📊 Dashboard</h2>
-    <button id="installBtn" style="display:none;">Install</button>
-    <button onclick="logout()">Logout</button>
-  </header>
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select><br><br>
 
-  <div class="container">
+  <input id="amount" placeholder="Amount"><br><br>
+  <input id="category" placeholder="Category"><br><br>
+  <input id="note" placeholder="Note"><br><br>
 
-    <h3>Balance: ₹ <span id="balance">0</span></h3>
+  <button onclick="add()">Add</button>
+  <button onclick="logout()">Logout</button>
 
-    <h3>Add Transaction</h3>
-
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
-
-    <input id="amount" placeholder="Amount">
-    <input id="category" placeholder="Category">
-    <input id="note" placeholder="Note">
-
-    <button onclick="add()">Add</button>
-    <button onclick="downloadPDF()">Download PDF</button>
-
-    <h3>Transactions</h3>
-    <ul id="list"></ul>
-
-    <!-- CHART -->
-    <canvas id="chart"></canvas>
-
-  </div>
-
+  <ul id="list"></ul>
 </div>
 
-<!-- SCRIPT -->
-<script src="app.js"></script>
+<script>
+const API = "https://my-money-backend-dq7n.onrender.com";
+let token = localStorage.getItem("token") || "";
+
+// SHOW APP
+function showApp(){
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="block";
+}
+
+// SIGNUP
+async function signup(){
+  const res = await fetch(API+"/signup",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      email: sEmail.value,
+      password: sPass.value
+    })
+  });
+
+  const data = await res.json();
+  alert(data.message || data.error);
+}
+
+// LOGIN
+async function login(){
+  const res = await fetch(API+"/login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      email: lEmail.value,
+      password: lPass.value
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.token){
+    token = data.token;
+    localStorage.setItem("token", token);
+    showApp();
+    loadData();
+  }else{
+    alert(data.error);
+  }
+}
+
+// LOAD DATA
+async function loadData(){
+  const res = await fetch(API+"/transactions",{
+    headers:{authorization:token}
+  });
+
+  const data = await res.json();
+
+  let total = 0;
+  list.innerHTML="";
+
+  data.forEach(t=>{
+    if(t.type==="income") total += t.amount;
+    else total -= t.amount;
+
+    list.innerHTML += `<li>₹${t.amount} - ${t.category}</li>`;
+  });
+
+  balance.innerText = "Balance: ₹"+total;
+}
+
+// ADD
+async function add(){
+  await fetch(API+"/add",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      authorization:token
+    },
+    body: JSON.stringify({
+      type:type.value,
+      amount:Number(amount.value),
+      category:category.value,
+      note:note.value
+    })
+  });
+
+  loadData();
+}
+
+// LOGOUT
+function logout(){
+  localStorage.removeItem("token");
+  location.reload();
+}
+
+// AUTO LOGIN
+if(token){
+  showApp();
+  loadData();
+}
+</script>
 
 </body>
 </html>
