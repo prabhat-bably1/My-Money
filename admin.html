@@ -154,7 +154,11 @@ async function loadUsers() {
 
   data.innerHTML = "";
   users.forEach(u => {
-    data.innerHTML += `<li>👤 ${u.email}</li>`;
+    data.innerHTML += `
+<li>
+  👤 ${u.email}
+  <button onclick="deleteUser('${u._id}')">❌ Delete</button>
+</li>`;
   });
 }
 
