@@ -69,3 +69,18 @@ let processed = incomes.map(processIncome);
 
 // show result
 showIncome(processed);
+async function loadTransactions() {
+  try {
+    const res = await fetch(API + "/transactions", {
+      headers: {
+        authorization: TOKEN
+      }
+    });
+
+    const data = await res.json();
+
+    processData(data);
+  } catch (err) {
+    console.log(err);
+  }
+}
