@@ -1,3 +1,6 @@
+const API = "https://my-money-backend-dq7n.onrender.com";
+const TOKEN = localStorage.getItem("token");
+
 // ---------- TAX LOGIC ----------
 
 // check taxable
