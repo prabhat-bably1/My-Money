@@ -62,3 +62,12 @@ tips.forEach(tip => {
   li.innerText = tip;
   tipsList.appendChild(li);
 });
+function isTaxable(source, amount) {
+  // simple logic (baad me upgrade kar sakte ho)
+
+  if (source === "gift" && amount < 50000) return false;
+  if (source === "salary") return true;
+  if (source === "freelance") return true;
+
+  return false;
+}
