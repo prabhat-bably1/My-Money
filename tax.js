@@ -84,3 +84,20 @@ async function loadTransactions() {
     console.log(err);
   }
 }
+function processData(transactions) {
+  let incomes = [];
+
+  transactions.forEach(t => {
+    if (t.type === "income") {
+      incomes.push({
+        amount: t.amount,
+        source: t.category || "other"
+      });
+    }
+  });
+
+  let processed = incomes.map(processIncome);
+
+  showIncome(processed);
+}
+loadTransactions();
