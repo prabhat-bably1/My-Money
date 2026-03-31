@@ -60,15 +60,6 @@ function showIncome(data) {
 
 // ---------- TEST DATA ----------
 
-let incomes = [
-  { amount: 50000, source: "freelance" },
-  { amount: 20000, source: "gift" }
-];
-
-let processed = incomes.map(processIncome);
-
-// show result
-showIncome(processed);
 async function loadTransactions() {
   try {
     const res = await fetch(API + "/transactions", {
