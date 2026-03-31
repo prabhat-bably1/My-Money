@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile</title>
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+<div class="profile">
+
+  <!-- USER INFO -->
+  <div class="card">
+    <h2 id="name">User Name</h2>
+    <p id="email">user@email.com</p>
+    <button onclick="editProfile()">Edit Profile</button>
+  </div>
+
+  <!-- USER CONTROL -->
+  <div class="card">
+    <h3>User Control</h3>
+    <button onclick="changePassword()">Change Password</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- APP INFO -->
+  <div class="card">
+    <h3>App Info</h3>
+    <p>Version: 1.0.0</p>
+    <button onclick="aboutApp()">About App</button>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="card">
+    <h3>Support</h3>
+    <button onclick="contactSupport()">Contact Support</button>
+  </div>
+
+</div>
+
+<script src="profile.js"></script>
+
+</body>
+</html>
