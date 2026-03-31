@@ -228,3 +228,6 @@ window.onload = function () {
 function openProfile() {
   window.location.href = "profile.html";
 }
+function openTax() {
+  window.location.href = "tax.html";
+}
