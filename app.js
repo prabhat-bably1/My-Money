@@ -26,8 +26,9 @@ async function signup() {
     if (data.message) {
       alert("Signup Success ✅");
     } else {
-      alert(data.error || "Signup Failed ❌");
+      alert(data.error || "Error ❌");
     }
+
   } catch {
     alert("Server Error ❌");
   }
