@@ -4,43 +4,46 @@
   <title>Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
+
 <body>
 
 <div class="profile">
 
   <!-- USER INFO -->
   <div class="card">
+    <img id="profilePic" src="https://via.placeholder.com/100" width="100"><br><br>
+
+    <input type="file" onchange="uploadPic(event)"><br><br>
+
     <h2 id="name">User Name</h2>
     <p id="email">user@email.com</p>
+
     <button onclick="openEdit()">Edit Profile</button>
   </div>
 
-  <!-- EDIT FORM -->
+  <!-- EDIT PROFILE -->
   <div class="card" id="editBox" style="display:none;">
     <h3>Edit Profile</h3>
+
     <input type="text" id="newName" placeholder="New Name"><br><br>
     <input type="email" id="newEmail" placeholder="New Email"><br><br>
+
     <button onclick="updateProfile()">Save</button>
   </div>
 
-  <!-- USER CONTROL -->
+  <!-- CHANGE PASSWORD -->
   <div class="card">
-    <h3>User Control</h3>
+    <h3>Security</h3>
+
+    <input type="password" id="oldPass" placeholder="Old Password"><br><br>
+    <input type="password" id="newPass" placeholder="New Password"><br><br>
+
     <button onclick="changePassword()">Change Password</button>
+  </div>
+
+  <!-- LOGOUT -->
+  <div class="card">
     <button onclick="logout()">Logout</button>
-  </div>
-
-  <!-- APP INFO -->
-  <div class="card">
-    <h3>App Info</h3>
-    <p>Version: 1.0.0</p>
-    <button onclick="aboutApp()">About App</button>
-  </div>
-
-  <!-- SUPPORT -->
-  <div class="card">
-    <h3>Support</h3>
-    <button onclick="contactSupport()">Contact Support</button>
   </div>
 
 </div>
