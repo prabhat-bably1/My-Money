@@ -1,66 +1,83 @@
-const API = "https://my-money-backend-dq7n.onrender.com";
-let token = localStorage.getItem("token");
+// LOAD PROFILE
+window.onload = function () {
+  const user = JSON.parse(localStorage.getItem("user"))
 
-// ✅ LOAD PROFILE
-async function loadProfile() {
-  const res = await fetch(API + "/profile", {
-    headers: { authorization: token }
-  });
+  if (!user) {
+    alert("Login first")
+    window.location.href = "index.html"
+    return
+  }
 
-  const data = await res.json();
+  document.getElementById("name").innerText = user.name
+  document.getElementById("email").innerText = user.email
 
-  // 👇 display me dikhane ke liye
-  document.getElementById("name").innerText = data.name || "No Name";
-  document.getElementById("email").innerText = data.email || "";
+  document.getElementById("newName").value = user.name
+  document.getElementById("newEmail").value = user.email
 
-  // 👇 edit box me fill karne ke liye
-  document.getElementById("newName").value = data.name || "";
-  document.getElementById("newEmail").value = data.email || "";
-}
-
-// ✅ UPDATE PROFILE
-async function updateProfile() {
-  const name = document.getElementById("newName").value;
-  const email = document.getElementById("newEmail").value;
-
-  try {
-    const res = await fetch(API + "/update-profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: token
-      },
-      body: JSON.stringify({ name, email })
-    });
-
-    const data = await res.json();
-
-    if (data.message) {
-      alert("Profile Updated ✅");
-
-      // 👇 turant screen pe update
-      document.getElementById("name").innerText = name;
-      document.getElementById("email").innerText = email;
-
-      // 👇 edit box band
-      document.getElementById("editBox").style.display = "none";
-    } else {
-      alert(data.error || "Error ❌");
-    }
-
-  } catch {
-    alert("Server Error ❌");
+  // load profile pic
+  if (user.pic) {
+    document.getElementById("profilePic").src = user.pic
   }
 }
 
-// ✅ LOGOUT
-function logout() {
-  localStorage.removeItem("token");
-  location.href = "index.html";
+// OPEN EDIT
+function openEdit() {
+  document.getElementById("editBox").style.display = "block"
 }
 
-// ✅ AUTO LOAD
-loadProfile();
-function openEdit() {
-  document.getElementById("editBox").style.display = "block";
+// UPDATE PROFILE
+function updateProfile() {
+  const name = document.getElementById("newName").value
+  const email = document.getElementById("newEmail").value
+
+  let user = JSON.parse(localStorage.getItem("user"))
+
+  user.name = name
+  user.email = email
+
+  localStorage.setItem("user", JSON.stringify(user))
+
+  alert("Profile Updated ✅")
+  location.reload()
+}
+
+// UPLOAD PROFILE PIC
+function uploadPic(event) {
+  const file = event.target.files[0]
+  const reader = new FileReader()
+
+  reader.onload = function () {
+    let user = JSON.parse(localStorage.getItem("user"))
+    user.pic = reader.result
+
+    localStorage.setItem("user", JSON.stringify(user))
+
+    document.getElementById("profilePic").src = reader.result
+  }
+
+  reader.readAsDataURL(file)
+}
+
+// CHANGE PASSWORD
+function changePassword() {
+  const oldPass = document.getElementById("oldPass").value
+  const newPass = document.getElementById("newPass").value
+
+  let user = JSON.parse(localStorage.getItem("user"))
+
+  if (user.password !== oldPass) {
+    alert("Wrong old password ❌")
+    return
+  }
+
+  user.password = newPass
+  localStorage.setItem("user", JSON.stringify(user))
+
+  alert("Password changed ✅")
+}
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem("user")
+  window.location.href = "index.html"
 }
