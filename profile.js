@@ -19,39 +19,29 @@ async function loadProfile() {
 }
 
 // OPEN EDIT BOX
-function editProfile() {
-  let newName = prompt("Enter new name:");
-  let newEmail = prompt("Enter new email:");
+async function editProfile() {
+  const name = prompt("Enter new name:");
+  const email = prompt("Enter new email:");
 
-  if (!newName || !newEmail) {
-    alert("All fields required!");
-    return;
-  }
+  if (!name || !email) return;
 
-  fetch(API + "/user/profile", {
-    method: "PUT",
+  const res = await fetch(API + "/user/update", {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       authorization: TOKEN
     },
-    body: JSON.stringify({
-      name: newName,
-      email: newEmail
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert("Profile Updated ✅");
-      loadProfile(); // reload data
-    } else {
-      alert("Update failed ❌");
-    }
-  })
-  .catch(err => {
-    console.log(err);
-    alert("Server error ❌");
+    body: JSON.stringify({ name, email })
   });
+
+  const data = await res.json();
+
+  if (data.message) {
+    alert("Profile Updated ✅");
+    loadProfile(); // reload data
+  } else {
+    alert(data.error || "Update Failed ❌");
+  }
 }
 
 // SAVE PROFILE
