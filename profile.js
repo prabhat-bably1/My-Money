@@ -15,7 +15,27 @@ async function loadProfile() {
 
 // EDIT PROFILE
 function editProfile() {
-  alert("Edit Profile coming soon");
+  let newName = prompt("Enter your new name:");
+
+  if (!newName) return;
+
+  fetch(API + "/user/update-profile", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: TOKEN
+    },
+    body: JSON.stringify({ name: newName })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert("Profile Updated ✅");
+
+    // UI update instantly
+    document.getElementById("name").innerText = newName;
+
+  })
+  .catch(err => console.log(err));
 }
 
 // CHANGE PASSWORD
