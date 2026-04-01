@@ -3,25 +3,25 @@ let token = localStorage.getItem("token");
 
 // ✅ LOAD PROFILE
 async function loadProfile() {
-  try {
-    const res = await fetch(API + "/profile", {
-      headers: { authorization: token }
-    });
+  const res = await fetch(API + "/profile", {
+    headers: { authorization: token }
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    document.getElementById("name").value = data.name || "";
-    document.getElementById("email").value = data.email || "";
+  // 👇 display me dikhane ke liye
+  document.getElementById("name").innerText = data.name || "No Name";
+  document.getElementById("email").innerText = data.email || "";
 
-  } catch {
-    alert("Error loading profile ❌");
-  }
+  // 👇 edit box me fill karne ke liye
+  document.getElementById("newName").value = data.name || "";
+  document.getElementById("newEmail").value = data.email || "";
 }
 
 // ✅ UPDATE PROFILE
 async function updateProfile() {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
+  const name = document.getElementById("newName").value;
+  const email = document.getElementById("newEmail").value;
 
   try {
     const res = await fetch(API + "/update-profile", {
@@ -37,6 +37,13 @@ async function updateProfile() {
 
     if (data.message) {
       alert("Profile Updated ✅");
+
+      // 👇 turant screen pe update
+      document.getElementById("name").innerText = name;
+      document.getElementById("email").innerText = email;
+
+      // 👇 edit box band
+      document.getElementById("editBox").style.display = "none";
     } else {
       alert(data.error || "Error ❌");
     }
@@ -54,3 +61,6 @@ function logout() {
 
 // ✅ AUTO LOAD
 loadProfile();
+function openEdit() {
+  document.getElementById("editBox").style.display = "block";
+}
