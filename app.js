@@ -7,7 +7,7 @@ function showApp() {
   document.getElementById("auth").style.display = "none";
   document.getElementById("app").style.display = "block";
 }
-
+ const name = document.getElementById("sName").value;
 // ================= SIGNUP =================
 async function signup() {
   const email = document.getElementById("sEmail").value;
@@ -17,7 +17,7 @@ async function signup() {
     const res = await fetch(API + "/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ name, email, password })
     });
 
     const data = await res.json();
@@ -41,7 +41,7 @@ async function login() {
     const res = await fetch(API + "/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ name, email, password })
     });
 
     const data = await res.json();
