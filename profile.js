@@ -73,3 +73,8 @@ function contactSupport() {
 
 // LOAD ON START
 loadProfile();
+
+let savedName = localStorage.getItem("name");
+if (savedName) {
+  document.getElementById("name").innerText = savedName;
+}
