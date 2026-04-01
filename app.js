@@ -10,6 +10,7 @@ function showApp() {
  const name = document.getElementById("sName").value;
 // ================= SIGNUP =================
 async function signup() {
+  const name = document.getElementById("sName").value;
   const email = document.getElementById("sEmail").value;
   const password = document.getElementById("sPass").value;
 
