@@ -12,7 +12,15 @@
   <div class="card">
     <h2 id="name">User Name</h2>
     <p id="email">user@email.com</p>
-    <button onclick="editProfile()">Edit Profile</button>
+    <button onclick="openEdit()">Edit Profile</button>
+  </div>
+
+  <!-- EDIT FORM -->
+  <div class="card" id="editBox" style="display:none;">
+    <h3>Edit Profile</h3>
+    <input type="text" id="newName" placeholder="New Name"><br><br>
+    <input type="email" id="newEmail" placeholder="New Email"><br><br>
+    <button onclick="saveProfile()">Save</button>
   </div>
 
   <!-- USER CONTROL -->
