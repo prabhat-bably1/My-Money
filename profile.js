@@ -1,116 +1,56 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
-const TOKEN = localStorage.getItem("token");
+let token = localStorage.getItem("token");
 
-// LOAD PROFILE
+// ✅ LOAD PROFILE
 async function loadProfile() {
   try {
-    const res = await fetch(API + "/user/profile", {
-      headers: { authorization: TOKEN }
+    const res = await fetch(API + "/profile", {
+      headers: { authorization: token }
     });
 
     const data = await res.json();
 
-    document.getElementById("name").innerText = data.name;
-    document.getElementById("email").innerText = data.email;
+    document.getElementById("name").value = data.name || "";
+    document.getElementById("email").value = data.email || "";
 
-  } catch (err) {
-    console.log(err);
+  } catch {
+    alert("Error loading profile ❌");
   }
 }
 
-// OPEN EDIT BOX
-async function editProfile() {
-  const name = prompt("Enter new name:");
-  const email = prompt("Enter new email:");
-
-  if (!name || !email) return;
-
-  const res = await fetch(API + "/user/update", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: TOKEN
-    },
-    body: JSON.stringify({ name, email })
-  });
-
-  const data = await res.json();
-
-  if (data.message) {
-    alert("Profile Updated ✅");
-    loadProfile(); // reload data
-  } else {
-    alert(data.error || "Update Failed ❌");
-  }
-}
-
-// SAVE PROFILE
-async function saveProfile() {
-  let name = document.getElementById("newName").value;
-  let email = document.getElementById("newEmail").value;
-
-  if (!name || !email) {
-    alert("Fill all fields");
-    return;
-  }
+// ✅ UPDATE PROFILE
+async function updateProfile() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
 
   try {
-    const res = await fetch(API + "/user/update-profile", {
-      method: "POST",
+    const res = await fetch(API + "/update-profile", {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        authorization: TOKEN
+        authorization: token
       },
       body: JSON.stringify({ name, email })
     });
 
     const data = await res.json();
 
-    alert("Profile Updated ✅");
+    if (data.message) {
+      alert("Profile Updated ✅");
+    } else {
+      alert(data.error || "Error ❌");
+    }
 
-    document.getElementById("name").innerText = name;
-    document.getElementById("email").innerText = email;
-
-    document.getElementById("editBox").style.display = "none";
-
-  } catch (err) {
-    console.log(err);
+  } catch {
+    alert("Server Error ❌");
   }
 }
 
-// CHANGE PASSWORD
-async function changePassword() {
-  let pass = prompt("Enter new password:");
-
-  if (!pass) return;
-
-  await fetch(API + "/user/change-password", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: TOKEN
-    },
-    body: JSON.stringify({ password: pass })
-  });
-
-  alert("Password Changed ✅");
-}
-
-// LOGOUT
+// ✅ LOGOUT
 function logout() {
   localStorage.removeItem("token");
-  window.location.href = "login.html";
+  location.href = "index.html";
 }
 
-// ABOUT
-function aboutApp() {
-  alert("My Money App 💰\nTrack income, expense & tax easily.");
-}
-
-// SUPPORT
-function contactSupport() {
-  window.location.href = "mailto:support@mymoney.com";
-}
-
-// START
+// ✅ AUTO LOAD
 loadProfile();
