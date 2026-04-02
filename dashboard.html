@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Dashboard</h2>
+
+<div class="card">
+  <input id="amount" placeholder="Amount">
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
+  <input type="date" id="date">
+  <button onclick="addData()">Add</button>
+</div>
+
+<div class="card">
+  <h3>Filter by Date</h3>
+  <input type="date" id="filterDate">
+  <button onclick="filterData()">Filter</button>
+</div>
+
+<div class="card">
+  <h3>Records</h3>
+  <ul id="list"></ul>
+</div>
+
+<div class="card">
+  <button onclick="downloadPDF()">Download PDF</button>
+  <button onclick="goProfile()">Profile</button>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
