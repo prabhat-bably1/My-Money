@@ -19,21 +19,23 @@
 </div>
 
 <div class="card">
-  <h3>Filter by Date</h3>
   <input type="date" id="filterDate">
   <button onclick="filterData()">Filter</button>
 </div>
 
 <div class="card">
-  <h3>Records</h3>
   <ul id="list"></ul>
 </div>
 
 <div class="card">
-  <button onclick="downloadPDF()">Download PDF</button>
   <button onclick="goProfile()">Profile</button>
+  <button onclick="downloadPDF()">Download PDF</button>
+  <button onclick="logout()">Logout</button>
 </div>
 
+<canvas id="chart" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>
