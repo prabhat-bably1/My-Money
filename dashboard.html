@@ -23,7 +23,7 @@
     </div>
 
     <div class="card yellow">
-      <h3>Tax</h3>
+      <h3>Tax + CA</h3>
       <p id="tax">₹0</p>
     </div>
   </div>
@@ -31,18 +31,17 @@
   <!-- ADD DATA -->
   <div class="card">
     <input id="amount" placeholder="Amount">
+
     <select id="type">
       <option value="income">Income</option>
       <option value="expense">Expense</option>
     </select>
-    <input type="date" id="date">
-    <button class="btn" onclick="addData()">Add</button>
-  </div>
 
-  <!-- FILTER -->
-  <div class="card">
-    <input type="date" id="filterDate">
-    <button class="btn" onclick="filterData()">Filter</button>
+    <input id="category" placeholder="Category (salary / food / rent)">
+    <input id="note" placeholder="Note (extra info)">
+    <input type="date" id="date">
+
+    <button class="btn" onclick="addData()">Add</button>
   </div>
 
   <!-- LIST -->
@@ -52,19 +51,11 @@
 
   <!-- ACTIONS -->
   <div class="card">
-    <button class="btn" onclick="downloadPDF()">Download PDF</button>
-    <button class="btn" onclick="goProfile()">Profile</button>
-    <button class="btn redBtn" onclick="logout()">Logout</button>
-  </div>
-
-  <!-- CHART -->
-  <div class="card">
-    <canvas id="chart"></canvas>
+    <button class="btn" onclick="logout()">Logout</button>
   </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="dashboard.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
