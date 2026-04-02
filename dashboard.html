@@ -6,25 +6,65 @@
 </head>
 <body>
 
-<h2>Dashboard</h2>
+<div class="container">
 
-<div class="card">
-  <input id="amount" placeholder="Amount">
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
-  <input type="date" id="date">
-  <button onclick="addData()">Add</button>
+  <h1>Dashboard 💰</h1>
+
+  <!-- SUMMARY -->
+  <div class="grid">
+    <div class="card">
+      <h3>Total Income</h3>
+      <p id="income">₹0</p>
+    </div>
+
+    <div class="card red">
+      <h3>Total Expense</h3>
+      <p id="expense">₹0</p>
+    </div>
+
+    <div class="card yellow">
+      <h3>Tax (10%)</h3>
+      <p id="tax">₹0</p>
+    </div>
+  </div>
+
+  <!-- ADD DATA -->
+  <div class="card">
+    <input id="amount" placeholder="Amount">
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+    <input type="date" id="date">
+    <button class="btn" onclick="addData()">Add</button>
+  </div>
+
+  <!-- FILTER -->
+  <div class="card">
+    <input type="date" id="filterDate">
+    <button class="btn" onclick="filterData()">Filter</button>
+  </div>
+
+  <!-- LIST -->
+  <div class="card">
+    <ul id="list"></ul>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="card">
+    <button class="btn" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn" onclick="goProfile()">Profile</button>
+    <button class="btn redBtn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- CHART -->
+  <div class="card">
+    <canvas id="chart"></canvas>
+  </div>
+
 </div>
 
-<div class="card">
-  <button onclick="loadData()">Refresh</button>
-  <button onclick="logout()">Logout</button>
-</div>
-
-<ul id="list"></ul>
-
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
