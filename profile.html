@@ -2,36 +2,18 @@
 <html>
 <head>
   <title>Profile</title>
-  <style>
-    body { background:#0f172a; color:white; font-family:sans-serif; }
-    .card { background:#1e293b; padding:20px; margin:15px; border-radius:10px; }
-    button { padding:10px; background:#6366f1; color:white; border:none; }
-  </style>
 </head>
-
 <body>
 
-<div class="card">
-  <img id="profilePic" src="https://via.placeholder.com/100" width="100"><br><br>
-  <input type="file" onchange="uploadPic(event)"><br><br>
+<h2 id="name"></h2>
+<p id="email"></p>
 
-  <h2 id="name"></h2>
-  <p id="email"></p>
+<input id="newName">
+<input id="newEmail">
+<button onclick="updateProfile()">Save</button>
 
-  <button onclick="openEdit()">Edit Profile</button>
-</div>
-
-<div class="card" id="editBox" style="display:none;">
-  <input id="newName"><br><br>
-  <input id="newEmail"><br><br>
-  <button onclick="updateProfile()">Save</button>
-</div>
-
-<div class="card">
-  <button onclick="logout()">Logout</button>
-</div>
+<button onclick="logout()">Logout</button>
 
 <script src="profile.js"></script>
-
 </body>
 </html>
