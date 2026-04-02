@@ -2,14 +2,16 @@ let data = JSON.parse(localStorage.getItem("data")) || [];
 
 function addData() {
   const item = {
-    amount: amount.value,
+    amount: Number(amount.value),
     type: type.value,
     date: date.value
   };
 
   data.push(item);
   localStorage.setItem("data", JSON.stringify(data));
+
   showData(data);
+  updateSummary();
   drawChart();
 }
 
@@ -26,26 +28,33 @@ function filterData() {
   showData(filtered);
 }
 
-function logout() {
-  localStorage.removeItem("login");
-  location.href = "index.html";
-}
+function updateSummary() {
+  let incomeTotal = 0;
+  let expenseTotal = 0;
 
-function goProfile() {
-  location.href = "profile.html";
+  data.forEach(d => {
+    if (d.type === "income") incomeTotal += d.amount;
+    else expenseTotal += d.amount;
+  });
+
+  const tax = incomeTotal * 0.1;
+
+  document.getElementById("income").innerText = "₹" + incomeTotal;
+  document.getElementById("expense").innerText = "₹" + expenseTotal;
+  document.getElementById("tax").innerText = "₹" + tax;
 }
 
 // 📊 Chart
 function drawChart() {
-  const income = data.filter(d => d.type === "income").length;
-  const expense = data.filter(d => d.type === "expense").length;
+  const incomeCount = data.filter(d => d.type === "income").length;
+  const expenseCount = data.filter(d => d.type === "expense").length;
 
   new Chart(document.getElementById("chart"), {
-    type: "pie",
+    type: "doughnut",
     data: {
       labels: ["Income", "Expense"],
       datasets: [{
-        data: [income, expense]
+        data: [incomeCount, expenseCount]
       }]
     }
   });
@@ -53,7 +62,8 @@ function drawChart() {
 
 // 📄 PDF
 function downloadPDF() {
-  let text = "My Money Report\n\n";
+  let text = "MoneyFlow Report\n\n";
+
   data.forEach(d => {
     text += `${d.type} ₹${d.amount} (${d.date})\n`;
   });
@@ -65,7 +75,19 @@ function downloadPDF() {
   a.click();
 }
 
+// 🔐 NAVIGATION
+function logout() {
+  localStorage.removeItem("login");
+  location.href = "index.html";
+}
+
+function goProfile() {
+  location.href = "profile.html";
+}
+
+// LOAD
 window.onload = () => {
   showData(data);
+  updateSummary();
   drawChart();
 };
