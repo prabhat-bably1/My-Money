@@ -1,33 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Signup</title>
-  <style>
-    body { font-family: sans-serif; background:#0f172a; color:white; text-align:center; }
-    .box { margin:20px; padding:20px; background:#1e293b; border-radius:10px; }
-    input,button { padding:10px; margin:5px; width:80%; }
-    button { background:#6366f1; color:white; border:none; }
-  </style>
+  <title>My Money App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="box">
+<div class="card">
   <h2>Signup</h2>
-  <input id="sName" placeholder="Name"><br>
-  <input id="sEmail" placeholder="Email"><br>
-  <input id="sPassword" type="password" placeholder="Password"><br>
+  <input id="sName" placeholder="Name">
+  <input id="sEmail" placeholder="Email">
+  <input id="sPassword" type="password" placeholder="Password">
   <button onclick="signup()">Signup</button>
 </div>
 
-<div class="box">
+<div class="card">
   <h2>Login</h2>
-  <input id="lEmail" placeholder="Email"><br>
-  <input id="lPassword" type="password" placeholder="Password"><br>
+  <input id="lEmail" placeholder="Email">
+  <input id="lPassword" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
 <script src="auth.js"></script>
-
 </body>
 </html>
