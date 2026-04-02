@@ -1,30 +1,30 @@
 function signup() {
-  const name = sName.value
-  const email = sEmail.value
-  const password = sPassword.value
+  const user = {
+    name: sName.value,
+    email: sEmail.value,
+    password: sPassword.value,
+    role: "user",
+    pic: ""
+  };
 
-  const user = { name, email, password, pic: "", role: "user" }
-
-  localStorage.setItem("user", JSON.stringify(user))
-
-  alert("Signup success")
+  localStorage.setItem("user", JSON.stringify(user));
+  alert("Signup Success");
 }
 
 function login() {
-  const email = lEmail.value
-  const password = lPassword.value
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  const user = JSON.parse(localStorage.getItem("user"))
+  if (!user) return alert("No account");
 
-  if (user && user.email === email && user.password === password) {
-    localStorage.setItem("loggedIn", "true")
+  if (user.email === lEmail.value && user.password === lPassword.value) {
+    localStorage.setItem("login", "true");
 
     if (user.role === "admin") {
-      window.location.href = "admin.html"
+      location.href = "admin.html";
     } else {
-      window.location.href = "dashboard.html"
+      location.href = "dashboard.html";
     }
   } else {
-    alert("Wrong login")
+    alert("Wrong details");
   }
 }
