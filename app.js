@@ -65,6 +65,26 @@ async function loadData(){
 
   const data = await res.json();
 
+  let income = 0;
+let expense = 0;
+
+data.forEach(d=>{
+  if(d.type === "income"){
+    income += d.amount;
+  } else {
+    expense += d.amount;
+  }
+});
+
+const taxable = income - expense;
+const tax = taxable > 0 ? taxable * 0.1 : 0;
+const caCharge = tax * 0.05;
+
+// UI update
+document.getElementById("income").innerText = "₹" + income;
+document.getElementById("expense").innerText = "₹" + expense;
+document.getElementById("tax").innerText = "₹" + (tax + caCharge);
+
   list.innerHTML="";
   data.forEach(d=>{
     list.innerHTML += `
