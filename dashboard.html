@@ -19,23 +19,12 @@
 </div>
 
 <div class="card">
-  <input type="date" id="filterDate">
-  <button onclick="filterData()">Filter</button>
-</div>
-
-<div class="card">
-  <ul id="list"></ul>
-</div>
-
-<div class="card">
-  <button onclick="goProfile()">Profile</button>
-  <button onclick="downloadPDF()">Download PDF</button>
+  <button onclick="loadData()">Refresh</button>
   <button onclick="logout()">Logout</button>
 </div>
 
-<canvas id="chart" height="100"></canvas>
+<ul id="list"></ul>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="dashboard.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
