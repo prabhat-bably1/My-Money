@@ -1,20 +1,32 @@
-let user = JSON.parse(localStorage.getItem("user"));
+const API = "https://my-money-backend-dq7n.onrender.com";
 
-name.innerText = user.name;
-email.innerText = user.email;
+// LOAD
+async function loadProfile(){
+  const res = await fetch(API+"/profile",{
+    headers:{authorization:localStorage.getItem("token")}
+  });
 
-newName.value = user.name;
-newEmail.value = user.email;
+  const data = await res.json();
 
-function updateProfile() {
-  user.name = newName.value;
-  user.email = newEmail.value;
-
-  localStorage.setItem("user", JSON.stringify(user));
-  alert("Updated");
+  document.getElementById("name").value = data.name;
+  document.getElementById("email").value = data.email;
 }
 
-function logout() {
-  localStorage.removeItem("login");
-  location.href = "index.html";
+// SAVE
+async function saveProfile(){
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+
+  await fetch(API+"/profile",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      authorization:localStorage.getItem("token")
+    },
+    body:JSON.stringify({name,email})
+  });
+
+  alert("Saved ✅");
 }
+
+loadProfile();
