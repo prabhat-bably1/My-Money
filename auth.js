@@ -1,37 +1,30 @@
-// SIGNUP
 function signup() {
-  const name = document.getElementById("sName").value.trim()
-  const email = document.getElementById("sEmail").value.trim()
-  const password = document.getElementById("sPassword").value.trim()
+  const name = sName.value
+  const email = sEmail.value
+  const password = sPassword.value
 
-  if (!name || !email || !password) {
-    alert("Fill all fields ❌")
-    return
-  }
-
-  const user = { name, email, password, pic: "" }
+  const user = { name, email, password, pic: "", role: "user" }
 
   localStorage.setItem("user", JSON.stringify(user))
 
-  alert("Signup Success ✅")
+  alert("Signup success")
 }
 
-// LOGIN
 function login() {
-  const email = document.getElementById("lEmail").value.trim()
-  const password = document.getElementById("lPassword").value.trim()
+  const email = lEmail.value
+  const password = lPassword.value
 
   const user = JSON.parse(localStorage.getItem("user"))
 
-  if (!user) {
-    alert("No account ❌")
-    return
-  }
+  if (user && user.email === email && user.password === password) {
+    localStorage.setItem("loggedIn", "true")
 
-  if (user.email === email && user.password === password) {
-    alert("Login Success ✅")
-    window.location.href = "profile.html"
+    if (user.role === "admin") {
+      window.location.href = "admin.html"
+    } else {
+      window.location.href = "dashboard.html"
+    }
   } else {
-    alert("Wrong details ❌")
+    alert("Wrong login")
   }
 }
