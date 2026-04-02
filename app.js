@@ -39,9 +39,11 @@ async function login(){
 
 // ADD DATA
 async function addData(){
-  const amount = amount.value;
-  const type = type.value;
-  const date = date.value;
+  const amount = document.getElementById("amount").value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const note = document.getElementById("note").value;
+  const date = document.getElementById("date").value;
 
   await fetch(API+"/add",{
     method:"POST",
@@ -49,7 +51,7 @@ async function addData(){
       "Content-Type":"application/json",
       authorization:localStorage.getItem("token")
     },
-    body:JSON.stringify({amount,type,date})
+    body:JSON.stringify({amount,type,category,note,date})
   });
 
   loadData();
@@ -65,7 +67,13 @@ async function loadData(){
 
   list.innerHTML="";
   data.forEach(d=>{
-    list.innerHTML+=`<li>${d.type} ₹${d.amount} (${d.date})</li>`;
+    list.innerHTML += `
+<li>
+${d.type.toUpperCase()} ₹${d.amount} <br>
+📂 ${d.category} <br>
+📝 ${d.note} <br>
+📅 ${d.date}
+</li>`;
   });
 }
 
