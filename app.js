@@ -1,42 +1,5 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-// SIGNUP
-async function signup(){
-  const name = sName.value;
-  const email = sEmail.value;
-  const password = sPass.value;
-
-  const res = await fetch(API+"/signup",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name,email,password})
-  });
-
-  const data = await res.json();
-  alert(data.msg || data.error);
-}
-
-// LOGIN
-async function login(){
-  const email = lEmail.value;
-  const password = lPass.value;
-
-  const res = await fetch(API+"/login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email,password})
-  });
-
-  const data = await res.json();
-
-  if(data.token){
-    localStorage.setItem("token",data.token);
-    location.href="dashboard.html";
-  }else{
-    alert(data.error);
-  }
-}
-
 // ADD DATA
 async function addData(){
   const amount = document.getElementById("amount").value;
@@ -66,43 +29,43 @@ async function loadData(){
   const data = await res.json();
 
   let income = 0;
-let expense = 0;
+  let expense = 0;
 
-data.forEach(d=>{
-  if(d.type === "income"){
-    income += d.amount;
-  } else {
-    expense += d.amount;
-  }
-});
+  list.innerHTML = "";
 
-const taxable = income - expense;
-const tax = taxable > 0 ? taxable * 0.1 : 0;
-const caCharge = tax * 0.05;
-
-// UI update
-document.getElementById("income").innerText = "₹" + income;
-document.getElementById("expense").innerText = "₹" + expense;
-document.getElementById("tax").innerText = "₹" + (tax + caCharge);
-
-  list.innerHTML="";
   data.forEach(d=>{
+    if(d.type === "income"){
+      income += d.amount;
+    } else {
+      expense += d.amount;
+    }
+
     list.innerHTML += `
-<li>
-${d.type.toUpperCase()} ₹${d.amount} <br>
-📂 ${d.category} <br>
-📝 ${d.note} <br>
-📅 ${d.date}
-</li>`;
+    <li style="margin-bottom:10px;">
+      <b>${d.type.toUpperCase()}</b> ₹${d.amount}<br>
+      📂 ${d.category || "-"}<br>
+      📝 ${d.note || "-"}<br>
+      📅 ${d.date}
+    </li>`;
   });
+
+  // TAX LOGIC
+  const taxable = income - expense;
+  const tax = taxable > 0 ? taxable * 0.1 : 0;
+  const caCharge = tax * 0.05;
+
+  document.getElementById("income").innerText = "₹" + income;
+  document.getElementById("expense").innerText = "₹" + expense;
+  document.getElementById("tax").innerText = "₹" + (tax + caCharge);
 }
 
 // LOGOUT
 function logout(){
   localStorage.removeItem("token");
-  location.href="index.html";
+  location.href = "index.html";
 }
 
+// AUTO LOAD
 if(location.pathname.includes("dashboard")){
   loadData();
 }
