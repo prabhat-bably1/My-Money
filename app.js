@@ -49,6 +49,19 @@ async function loadData(){
     </li>`;
   });
 
+  // CHART
+const ctx = document.getElementById("chart");
+
+new Chart(ctx, {
+  type: "pie",
+  data: {
+    labels: ["Income", "Expense"],
+    datasets: [{
+      data: [income, expense],
+      backgroundColor: ["green", "red"]
+    }]
+  }
+});
   // TAX LOGIC
   const taxable = income - expense;
   const tax = taxable > 0 ? taxable * 0.1 : 0;
