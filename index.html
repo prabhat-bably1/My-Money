@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Money 💰</title>
+  <title>MoneyFlow</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
-  <h2>Signup</h2>
-  <input id="sName" placeholder="Name">
-  <input id="sEmail" placeholder="Email">
-  <input id="sPass" type="password" placeholder="Password">
-  <button onclick="signup()">Signup</button>
-</div>
+<div class="container">
 
-<div class="card">
-  <h2>Login</h2>
-  <input id="lEmail" placeholder="Email">
-  <input id="lPass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+  <h1>MoneyFlow 💰</h1>
+
+  <!-- SIGNUP -->
+  <input type="email" id="sEmail" placeholder="Signup Email">
+  <input type="password" id="sPass" placeholder="Password">
+  <button class="btn" onclick="signup()">Signup</button>
+
+  <hr>
+
+  <!-- LOGIN -->
+  <input type="email" id="lEmail" placeholder="Login Email">
+  <input type="password" id="lPass" placeholder="Password">
+  <button class="btn" onclick="login()">Login</button>
+
 </div>
 
 <script src="app.js"></script>
