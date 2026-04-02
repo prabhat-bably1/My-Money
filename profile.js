@@ -27,10 +27,20 @@ function openEdit() {
 
 // UPDATE PROFILE
 function updateProfile() {
-  const name = document.getElementById("newName").value
-  const email = document.getElementById("newEmail").value
+  const name = document.getElementById("newName").value.trim()
+  const email = document.getElementById("newEmail").value.trim()
+
+  if (!name || !email) {
+    alert("Fill all fields ❌")
+    return
+  }
 
   let user = JSON.parse(localStorage.getItem("user"))
+
+  if (!user) {
+    alert("User not found, login again ❌")
+    return
+  }
 
   user.name = name
   user.email = email
@@ -38,21 +48,28 @@ function updateProfile() {
   localStorage.setItem("user", JSON.stringify(user))
 
   alert("Profile Updated ✅")
-  location.reload()
+
+  // instant update UI
+  document.getElementById("name").innerText = name
+  document.getElementById("email").innerText = email
 }
 
 // UPLOAD PROFILE PIC
 function uploadPic(event) {
   const file = event.target.files[0]
+
+  if (!file) return
+
   const reader = new FileReader()
 
-  reader.onload = function () {
-    let user = JSON.parse(localStorage.getItem("user"))
-    user.pic = reader.result
+  reader.onload = function (e) {
+    let user = JSON.parse(localStorage.getItem("user")) || {}
+
+    user.pic = e.target.result
 
     localStorage.setItem("user", JSON.stringify(user))
 
-    document.getElementById("profilePic").src = reader.result
+    document.getElementById("profilePic").src = e.target.result
   }
 
   reader.readAsDataURL(file)
