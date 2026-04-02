@@ -63,14 +63,25 @@ new Chart(ctx, {
   }
 });
   // TAX LOGIC
-  const taxable = income - expense;
-  const tax = taxable > 0 ? taxable * 0.1 : 0;
-  const caCharge = tax * 0.05;
+  let tax = 0;
 
-  document.getElementById("income").innerText = "₹" + income;
-  document.getElementById("expense").innerText = "₹" + expense;
-  document.getElementById("tax").innerText = "₹" + (tax + caCharge);
+if(income <= 250000){
+  tax = 0;
 }
+else if(income <= 500000){
+  tax = (income - 250000) * 0.05;
+}
+else if(income <= 1000000){
+  tax = 12500 + (income - 500000) * 0.2;
+}
+else{
+  tax = 112500 + (income - 1000000) * 0.3;
+}
+
+const caCharge = tax * 0.05;
+
+document.getElementById("tax").innerText =
+  "₹" + (tax + caCharge);
 
 // LOGOUT
 function logout(){
