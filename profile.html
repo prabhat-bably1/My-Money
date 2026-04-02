@@ -2,50 +2,33 @@
 <html>
 <head>
   <title>Profile</title>
-  <link rel="stylesheet" href="profile.css">
+  <style>
+    body { background:#0f172a; color:white; font-family:sans-serif; }
+    .card { background:#1e293b; padding:20px; margin:15px; border-radius:10px; }
+    button { padding:10px; background:#6366f1; color:white; border:none; }
+  </style>
 </head>
 
 <body>
 
-<div class="profile">
+<div class="card">
+  <img id="profilePic" src="https://via.placeholder.com/100" width="100"><br><br>
+  <input type="file" onchange="uploadPic(event)"><br><br>
 
-  <!-- USER INFO -->
-  <div class="card">
-    <img id="profilePic" src="https://via.placeholder.com/100" width="100"><br><br>
+  <h2 id="name"></h2>
+  <p id="email"></p>
 
-    <input type="file" onchange="uploadPic(event)"><br><br>
+  <button onclick="openEdit()">Edit Profile</button>
+</div>
 
-    <h2 id="name">User Name</h2>
-    <p id="email">user@email.com</p>
+<div class="card" id="editBox" style="display:none;">
+  <input id="newName"><br><br>
+  <input id="newEmail"><br><br>
+  <button onclick="updateProfile()">Save</button>
+</div>
 
-    <button onclick="openEdit()">Edit Profile</button>
-  </div>
-
-  <!-- EDIT PROFILE -->
-  <div class="card" id="editBox" style="display:none;">
-    <h3>Edit Profile</h3>
-
-    <input type="text" id="newName" placeholder="New Name"><br><br>
-    <input type="email" id="newEmail" placeholder="New Email"><br><br>
-
-    <button onclick="updateProfile()">Save</button>
-  </div>
-
-  <!-- CHANGE PASSWORD -->
-  <div class="card">
-    <h3>Security</h3>
-
-    <input type="password" id="oldPass" placeholder="Old Password"><br><br>
-    <input type="password" id="newPass" placeholder="New Password"><br><br>
-
-    <button onclick="changePassword()">Change Password</button>
-  </div>
-
-  <!-- LOGOUT -->
-  <div class="card">
-    <button onclick="logout()">Logout</button>
-  </div>
-
+<div class="card">
+  <button onclick="logout()">Logout</button>
 </div>
 
 <script src="profile.js"></script>
