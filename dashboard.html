@@ -87,11 +87,17 @@
       <p id="expense">₹0</p>
     </div>
 
-    <div class="card yellow">
-      <h3>Tax + CA</h3>
-      <p id="tax">₹0</p>
-    </div>
+    <div class="card yellow" onclick="showTaxDetails()">
+  <h3>Tax + CA (Click)</h3>
+  <p id="tax">₹0</p>
+
+  <div id="taxDetails" style="display:none; margin-top:10px;">
+    <p id="taxIncome"></p>
+    <p id="taxAmount"></p>
+    <p id="caCharge"></p>
+    <p id="taxAdvice" style="color:green;"></p>
   </div>
+    </div>
 
   <!-- ADD DATA -->
   <div class="card">
