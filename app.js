@@ -58,6 +58,11 @@ async function loadData(){
     `;
   });
 
+  // TAX UPDATE
+const result = calculateTax(income);
+
+document.getElementById("tax").innerText =
+  "₹" + (result.tax + result.caCharge);
   // UI UPDATE
   document.getElementById("income").innerText = "₹" + income;
   document.getElementById("expense").innerText = "₹" + expense;
