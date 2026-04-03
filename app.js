@@ -62,26 +62,26 @@ async function loadData(){
   document.getElementById("income").innerText = "₹" + income;
   document.getElementById("expense").innerText = "₹" + expense;
 
-  // TAX LOGIC (INDIA STYLE 🔥)
+  // TAX CALCULATION FUNCTION
+function calculateTax(income){
   let tax = 0;
 
   if(income <= 250000){
     tax = 0;
-  } 
+  }
   else if(income <= 500000){
     tax = (income - 250000) * 0.05;
-  } 
+  }
   else if(income <= 1000000){
     tax = 12500 + (income - 500000) * 0.2;
-  } 
-  else {
+  }
+  else{
     tax = 112500 + (income - 1000000) * 0.3;
   }
 
   let caCharge = tax * 0.05;
 
-  document.getElementById("tax").innerText =
-    "₹" + Math.floor(tax + caCharge);
+  return { tax, caCharge };
 }
 
 // LOGOUT
@@ -93,4 +93,46 @@ function logout(){
 // AUTO LOAD
 if(location.pathname.includes("dashboard")){
   loadData();
+}
+function showTaxDetails(){
+  const details = document.getElementById("taxDetails");
+
+  if(details.style.display === "none"){
+    details.style.display = "block";
+  } else {
+    details.style.display = "none";
+    return;
+  }
+
+  const incomeText = document.getElementById("income").innerText.replace("₹","");
+  const income = Number(incomeText);
+
+  const result = calculateTax(income);
+
+  document.getElementById("taxIncome").innerText =
+    "Total Income: ₹" + income;
+
+  document.getElementById("taxAmount").innerText =
+    "Tax: ₹" + result.tax;
+
+  document.getElementById("caCharge").innerText =
+    "CA Charge (5%): ₹" + result.caCharge;
+
+  // TAX SAVING ADVICE
+  let advice = "";
+
+  if(income <= 250000){
+    advice = "No Tax 👍 You are safe";
+  }
+  else if(income <= 500000){
+    advice = "Tip: Invest in ELSS / LIC to reduce tax";
+  }
+  else if(income <= 1000000){
+    advice = "Tip: Use 80C (₹1.5L), Health Insurance, NPS";
+  }
+  else{
+    advice = "High Tax! Use CA + Investments for saving";
+  }
+
+  document.getElementById("taxAdvice").innerText = advice;
 }
