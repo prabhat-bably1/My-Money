@@ -9,7 +9,7 @@ async function addData(){
   const date = document.getElementById("date").value;
 
   if(!amount || !date){
-    alert("Fill amount & date");
+    alert("Enter amount & date");
     return;
   }
 
@@ -58,16 +58,18 @@ async function loadData(){
     `;
   });
 
-  // TAX UPDATE
-const result = calculateTax(income);
-
-document.getElementById("tax").innerText =
-  "₹" + (result.tax + result.caCharge);
-  // UI UPDATE
+  // UPDATE UI
   document.getElementById("income").innerText = "₹" + income;
   document.getElementById("expense").innerText = "₹" + expense;
 
-  // TAX CALCULATION FUNCTION
+  // TAX
+  const result = calculateTax(income);
+
+  document.getElementById("tax").innerText =
+    "₹" + Math.floor(result.tax + result.caCharge);
+}
+
+// TAX FUNCTION
 function calculateTax(income){
   let tax = 0;
 
@@ -89,28 +91,20 @@ function calculateTax(income){
   return { tax, caCharge };
 }
 
-// LOGOUT
-function logout(){
-  localStorage.removeItem("token");
-  location.href = "index.html";
-}
-
-// AUTO LOAD
-if(location.pathname.includes("dashboard")){
-  loadData();
-}
+// TAX DETAILS
 function showTaxDetails(){
-  const details = document.getElementById("taxDetails");
+  const box = document.getElementById("taxDetails");
 
-  if(details.style.display === "none"){
-    details.style.display = "block";
+  if(box.style.display === "none"){
+    box.style.display = "block";
   } else {
-    details.style.display = "none";
+    box.style.display = "none";
     return;
   }
 
-  const incomeText = document.getElementById("income").innerText.replace("₹","");
-  const income = Number(incomeText);
+  const income = Number(
+    document.getElementById("income").innerText.replace("₹","")
+  );
 
   const result = calculateTax(income);
 
@@ -121,23 +115,45 @@ function showTaxDetails(){
     "Tax: ₹" + result.tax;
 
   document.getElementById("caCharge").innerText =
-    "CA Charge (5%): ₹" + result.caCharge;
+    "CA Charge: ₹" + result.caCharge;
 
-  // TAX SAVING ADVICE
   let advice = "";
 
   if(income <= 250000){
-    advice = "No Tax 👍 You are safe";
+    advice = "No Tax 👍";
   }
   else if(income <= 500000){
-    advice = "Tip: Invest in ELSS / LIC to reduce tax";
-  }
-  else if(income <= 1000000){
-    advice = "Tip: Use 80C (₹1.5L), Health Insurance, NPS";
+    advice = "Use ELSS / LIC";
   }
   else{
-    advice = "High Tax! Use CA + Investments for saving";
+    advice = "Use 80C, NPS, Insurance";
   }
 
   document.getElementById("taxAdvice").innerText = advice;
+}
+
+// LOGOUT
+function logout(){
+  localStorage.removeItem("token");
+  location.href = "index.html";
+}
+
+// PDF
+function downloadPDF(){
+  let content = "Money Report\n\n";
+
+  document.querySelectorAll("#list li").forEach(li=>{
+    content += li.innerText + "\n\n";
+  });
+
+  const blob = new Blob([content], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "report.txt";
+  a.click();
+}
+
+// AUTO LOAD
+if(location.pathname.includes("dashboard")){
+  loadData();
 }
