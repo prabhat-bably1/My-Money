@@ -1,42 +1,96 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-// SIGNUP
-async function signup(){
-  const name = document.getElementById("sName").value;
-  const email = document.getElementById("sEmail").value;
-  const password = document.getElementById("sPass").value;
+// ADD DATA
+async function addData(){
+  const amount = document.getElementById("amount").value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const note = document.getElementById("note").value;
+  const date = document.getElementById("date").value;
 
-  const res = await fetch(API + "/signup", {
+  if(!amount || !date){
+    alert("Fill amount & date");
+    return;
+  }
+
+  await fetch(API + "/add", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      authorization: localStorage.getItem("token")
     },
-    body: JSON.stringify({ name, email, password })
+    body: JSON.stringify({ amount, type, category, note, date })
   });
 
-  const data = await res.json();
-  alert(data.msg || data.error);
+  loadData();
 }
 
-// LOGIN
-async function login(){
-  const email = document.getElementById("lEmail").value;
-  const password = document.getElementById("lPass").value;
-
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
+// LOAD DATA
+async function loadData(){
+  const res = await fetch(API + "/data", {
+    headers:{
+      authorization: localStorage.getItem("token")
+    }
   });
 
   const data = await res.json();
 
-  if(data.token){
-    localStorage.setItem("token", data.token);
-    location.href = "dashboard.html";
-  } else {
-    alert(data.error);
+  let income = 0;
+  let expense = 0;
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.forEach(d=>{
+    if(d.type === "income"){
+      income += Number(d.amount);
+    } else {
+      expense += Number(d.amount);
+    }
+
+    list.innerHTML += `
+      <li>
+        <b>${d.type}</b> ₹${d.amount}<br>
+        ${d.category || "-"}<br>
+        ${d.note || "-"}<br>
+        ${d.date}
+      </li>
+    `;
+  });
+
+  // UI UPDATE
+  document.getElementById("income").innerText = "₹" + income;
+  document.getElementById("expense").innerText = "₹" + expense;
+
+  // TAX LOGIC (INDIA STYLE 🔥)
+  let tax = 0;
+
+  if(income <= 250000){
+    tax = 0;
+  } 
+  else if(income <= 500000){
+    tax = (income - 250000) * 0.05;
+  } 
+  else if(income <= 1000000){
+    tax = 12500 + (income - 500000) * 0.2;
+  } 
+  else {
+    tax = 112500 + (income - 1000000) * 0.3;
   }
+
+  let caCharge = tax * 0.05;
+
+  document.getElementById("tax").innerText =
+    "₹" + Math.floor(tax + caCharge);
+}
+
+// LOGOUT
+function logout(){
+  localStorage.removeItem("token");
+  location.href = "index.html";
+}
+
+// AUTO LOAD
+if(location.pathname.includes("dashboard")){
+  loadData();
 }
