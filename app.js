@@ -28,37 +28,57 @@ async function addData(){
 }
 
 // LOAD DATA
+let allData = []; // global
+
 async function loadData(){
   const res = await fetch(API + "/data", {
     headers:{authorization: localStorage.getItem("token")}
   });
 
   const data = await res.json();
+  allData = data; // SAVE ALL
 
   let income = 0;
   let expense = 0;
 
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
   data.forEach(d=>{
-    if(d.type === "income"){
-      income += Number(d.amount);
-    } else {
-      expense += Number(d.amount);
-    }
-
-    list.innerHTML += `
-      <li>
-        ${d.type} - ₹${d.amount}<br>
-        ${d.category || "-"}<br>
-        ${d.note || "-"}<br>
-        ${d.date}
-      </li>`;
+    if(d.type === "income") income += Number(d.amount);
+    else expense += Number(d.amount);
   });
 
   document.getElementById("income").innerText = "₹" + income;
   document.getElementById("expense").innerText = "₹" + expense;
+
+  const result = calculateTax(income);
+  document.getElementById("tax").innerText =
+    "₹" + (result.tax + result.caCharge);
+
+  renderList(data); // show all by default
+}
+
+// SHOW LIST
+function renderList(data){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.forEach(d=>{
+    list.innerHTML += `
+      <li>
+        <b>${d.type}</b> ₹${d.amount}<br>
+        ${d.category || "-"}<br>
+        ${d.note || "-"}<br>
+        ${d.date}
+      </li>
+    `;
+  });
+}
+
+// FILTER
+function filterData(type){
+  const filtered = allData.filter(d => d.type === type);
+  renderList(filtered);
+}
+
 
   // TAX
   const result = calculateTax(income);
