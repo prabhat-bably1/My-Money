@@ -1,72 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MoneyFlow Dashboard</title>
-
-  <!-- STYLE -->
-  <style>
-    body{
-      margin:0;
-      font-family:Arial;
-      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      color:white;
-    }
-
-    .container{
-      padding:20px;
-    }
-
-    h1{
-      text-align:center;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:15px;
-    }
-
-    .card{
-      background:rgba(255,255,255,0.08);
-      padding:15px;
-      border-radius:15px;
-      backdrop-filter:blur(10px);
-    }
-
-    .red{background:rgba(255,0,0,0.2);}
-    .yellow{background:rgba(255,255,0,0.2);}
-
-    input,select{
-      width:100%;
-      padding:10px;
-      margin-top:8px;
-      border:none;
-      border-radius:10px;
-    }
-
-    button{
-      width:100%;
-      padding:10px;
-      margin-top:10px;
-      border:none;
-      border-radius:10px;
-      background:#00c853;
-      color:white;
-      font-weight:bold;
-    }
-
-    ul{
-      list-style:none;
-      padding:0;
-    }
-
-    li{
-      background:rgba(255,255,255,0.1);
-      padding:10px;
-      margin-bottom:10px;
-      border-radius:10px;
-    }
-  </style>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -77,6 +13,7 @@
 
   <!-- SUMMARY -->
   <div class="grid">
+
     <div class="card">
       <h3>Total Income</h3>
       <p id="income">₹0</p>
@@ -88,30 +25,34 @@
     </div>
 
     <div class="card yellow" onclick="showTaxDetails()">
-  <h3>Tax + CA (Click)</h3>
-  <p id="tax">₹0</p>
+      <h3>Tax + CA (Click)</h3>
+      <p id="tax">₹0</p>
+    </div>
 
-  <div id="taxDetails" style="display:none; margin-top:10px;">
+  </div>
+
+  <!-- TAX DETAILS -->
+  <div class="card" id="taxDetails" style="display:none;">
+    <h3>Tax Details</h3>
     <p id="taxIncome"></p>
     <p id="taxAmount"></p>
     <p id="caCharge"></p>
     <p id="taxAdvice" style="color:green;"></p>
   </div>
-    </div>
 
   <!-- ADD DATA -->
   <div class="card">
     <h3>Add Entry</h3>
 
     <input id="amount" placeholder="Amount">
-
+    
     <select id="type">
       <option value="income">Income</option>
       <option value="expense">Expense</option>
     </select>
 
-    <input id="category" placeholder="Category (salary / food / rent)">
-    <input id="note" placeholder="Note (extra info)">
+    <input id="category" placeholder="Category">
+    <input id="note" placeholder="Note">
     <input type="date" id="date">
 
     <button onclick="addData()">Add</button>
@@ -123,42 +64,14 @@
     <ul id="list"></ul>
   </div>
 
-  <!-- CHART -->
-  <div class="card">
-    <canvas id="chart"></canvas>
-  </div>
-
   <!-- ACTIONS -->
   <div class="card">
-    <button onclick="downloadPDF()">Download Report</button>
-    <button onclick="location.href='profile.html'">Profile</button>
+    <button onclick="downloadPDF()">Download</button>
     <button onclick="logout()">Logout</button>
   </div>
 
 </div>
 
-<!-- CHART -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- APP -->
 <script src="app.js"></script>
-
-<!-- PDF FUNCTION -->
-<script>
-function downloadPDF(){
-  let content = "Money Report\n\n";
-
-  document.querySelectorAll("#list li").forEach(li=>{
-    content += li.innerText + "\n\n";
-  });
-
-  const blob = new Blob([content], {type:"text/plain"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "report.txt";
-  a.click();
-}
-</script>
-
 </body>
 </html>
