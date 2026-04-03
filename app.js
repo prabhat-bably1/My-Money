@@ -1,5 +1,7 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
+let allData = [];
+
 let chart;
 
 // ADD DATA
@@ -28,15 +30,13 @@ async function addData(){
 }
 
 // LOAD DATA
-let allData = []; // global
-
 async function loadData(){
   const res = await fetch(API + "/data", {
     headers:{authorization: localStorage.getItem("token")}
   });
 
   const data = await res.json();
-  allData = data; // SAVE ALL
+  allData = data;
 
   let income = 0;
   let expense = 0;
@@ -53,9 +53,8 @@ async function loadData(){
   document.getElementById("tax").innerText =
     "₹" + (result.tax + result.caCharge);
 
-  renderList(data); // show all by default
+  renderList(data);
 }
-
 // SHOW LIST
 function renderList(data){
   const list = document.getElementById("list");
@@ -163,4 +162,24 @@ function updateChart(income, expense){
 // AUTO LOAD
 if(location.pathname.includes("dashboard")){
   loadData();
+}
+function renderList(data){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.forEach(d=>{
+    list.innerHTML += `
+      <li>
+        <b>${d.type}</b> ₹${d.amount}<br>
+        ${d.category || "-"}<br>
+        ${d.note || "-"}<br>
+        ${d.date}
+      </li>
+    `;
+  });
+}
+
+function filterData(type){
+  const filtered = allData.filter(d => d.type === type);
+  renderList(filtered);
 }
