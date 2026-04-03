@@ -1,14 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MoneyFlow Dashboard</title>
+
+  <!-- STYLE -->
+  <style>
+    body{
+      margin:0;
+      font-family:Arial;
+      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color:white;
+    }
+
+    .container{
+      padding:20px;
+    }
+
+    h1{
+      text-align:center;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.08);
+      padding:15px;
+      border-radius:15px;
+      backdrop-filter:blur(10px);
+    }
+
+    .red{background:rgba(255,0,0,0.2);}
+    .yellow{background:rgba(255,255,0,0.2);}
+
+    input,select{
+      width:100%;
+      padding:10px;
+      margin-top:8px;
+      border:none;
+      border-radius:10px;
+    }
+
+    button{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
+      background:#00c853;
+      color:white;
+      font-weight:bold;
+    }
+
+    ul{
+      list-style:none;
+      padding:0;
+    }
+
+    li{
+      background:rgba(255,255,255,0.1);
+      padding:10px;
+      margin-bottom:10px;
+      border-radius:10px;
+    }
+  </style>
 </head>
+
 <body>
 
 <div class="container">
 
-  <h1>Dashboard 💰</h1>
+  <h1>💰 Dashboard</h1>
 
   <!-- SUMMARY -->
   <div class="grid">
@@ -30,6 +95,8 @@
 
   <!-- ADD DATA -->
   <div class="card">
+    <h3>Add Entry</h3>
+
     <input id="amount" placeholder="Amount">
 
     <select id="type">
@@ -41,31 +108,51 @@
     <input id="note" placeholder="Note (extra info)">
     <input type="date" id="date">
 
-    <button class="btn" onclick="addData()">Add</button>
+    <button onclick="addData()">Add</button>
   </div>
 
   <!-- LIST -->
   <div class="card">
+    <h3>History</h3>
     <ul id="list"></ul>
   </div>
 
+  <!-- CHART -->
   <div class="card">
-  <canvas id="chart"></canvas>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- ACTIONS -->
-  <div class="card">
-    
-    <button class="btn" onclick="downloadPDF()">Download PDF</button>
-    
-    <button onclick="location.href='profile.html'">Profile</button>
-    
-    <button class="btn" onclick="logout()">Logout</button>
-    
+    <canvas id="chart"></canvas>
   </div>
 
+  <!-- ACTIONS -->
+  <div class="card">
+    <button onclick="downloadPDF()">Download Report</button>
+    <button onclick="location.href='profile.html'">Profile</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<!-- CHART -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- APP -->
 <script src="app.js"></script>
+
+<!-- PDF FUNCTION -->
+<script>
+function downloadPDF(){
+  let content = "Money Report\n\n";
+
+  document.querySelectorAll("#list li").forEach(li=>{
+    content += li.innerText + "\n\n";
+  });
+
+  const blob = new Blob([content], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "report.txt";
+  a.click();
+}
+</script>
+
 </body>
 </html>
