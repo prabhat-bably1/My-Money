@@ -1,77 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MyMoney Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 15px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .big {
+      font-size: 22px;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00c853;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    ul {
+      max-height: 150px;
+      overflow: auto;
+    }
+
+    canvas {
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+<h1>💰 MyMoney Dashboard</h1>
 
-  <h1>💰 Dashboard</h1>
+<div class="grid">
 
-  <!-- SUMMARY -->
-  <div class="grid">
-
-    <div class="card">
-      <h3>Total Income</h3>
-      <p id="income">₹0</p>
-    </div>
-
-    <div class="card red">
-      <h3>Total Expense</h3>
-      <p id="expense">₹0</p>
-    </div>
-
-    <div class="card yellow" onclick="showTaxDetails()">
-      <h3>Tax + CA (Click)</h3>
-      <p id="tax">₹0</p>
-    </div>
-
-  </div>
-
-  <!-- TAX DETAILS -->
-  <div class="card" id="taxDetails" style="display:none;">
-    <h3>Tax Details</h3>
-    <p id="taxIncome"></p>
-    <p id="taxAmount"></p>
-    <p id="caCharge"></p>
-    <p id="taxAdvice" style="color:green;"></p>
-  </div>
-
-  <!-- ADD DATA -->
   <div class="card">
-    <h3>Add Entry</h3>
+    Total Income
+    <div id="income" class="big">₹0</div>
+  </div>
 
+  <div class="card">
+    Total Expense
+    <div id="expense" class="big">₹0</div>
+  </div>
+
+  <div class="card" onclick="showTaxDetails()">
+    Tax + CA (Click)
+    <div id="tax" class="big">₹0</div>
+  </div>
+
+  <div class="card">
+    Add Entry
     <input id="amount" placeholder="Amount">
-    
     <select id="type">
       <option value="income">Income</option>
       <option value="expense">Expense</option>
     </select>
-
     <input id="category" placeholder="Category">
     <input id="note" placeholder="Note">
-    <input type="date" id="date">
-
+    <input id="date" type="date">
     <button onclick="addData()">Add</button>
   </div>
 
-  <!-- LIST -->
   <div class="card">
-    <h3>History</h3>
+    History
     <ul id="list"></ul>
   </div>
 
-  <!-- ACTIONS -->
   <div class="card">
-    <button onclick="downloadPDF()">Download</button>
-    <button onclick="logout()">Logout</button>
+    Chart
+    <canvas id="chart"></canvas>
   </div>
 
 </div>
 
+<!-- TAX DETAILS -->
+<div id="taxDetails" style="display:none; padding:15px;">
+  <div class="card">
+    <h3>Tax Details</h3>
+    <p id="taxIncome"></p>
+    <p id="taxAmount"></p>
+    <p id="caCharge"></p>
+    <p id="taxAdvice"></p>
+  </div>
+</div>
+
 <script src="app.js"></script>
+
 </body>
 </html>
