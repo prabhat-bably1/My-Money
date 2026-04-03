@@ -35,53 +35,45 @@ async function loadData(){
 
   data.forEach(d=>{
     if(d.type === "income"){
-      income += d.amount;
+      income += d.amount;   // ✅ FIXED
     } else {
-      expense += d.amount;
+      expense += d.amount;  // ✅ FIXED
     }
 
     list.innerHTML += `
-    <li style="margin-bottom:10px;">
-      <b>${d.type.toUpperCase()}</b> ₹${d.amount}<br>
-      📂 ${d.category || "-"}<br>
-      📝 ${d.note || "-"}<br>
-      📅 ${d.date}
+    <li>
+      <b>${d.type}</b> ₹${d.amount}<br>
+      ${d.category || "-"}<br>
+      ${d.note || "-"}<br>
+      ${d.date}
     </li>`;
   });
 
-  // CHART
-const ctx = document.getElementById("chart");
+  // UI update
+  document.getElementById("income").innerText = "₹"+income;
+  document.getElementById("expense").innerText = "₹"+expense;
 
-new Chart(ctx, {
-  type: "pie",
-  data: {
-    labels: ["Income", "Expense"],
-    datasets: [{
-      data: [income, expense],
-      backgroundColor: ["green", "red"]
-    }]
-  }
-});
-  // TAX LOGIC
+  // TAX CALCULATION
   let tax = 0;
 
-if(income <= 250000){
-  tax = 0;
-}
-else if(income <= 500000){
-  tax = (income - 250000) * 0.05;
-}
-else if(income <= 1000000){
-  tax = 12500 + (income - 500000) * 0.2;
-}
-else{
-  tax = 112500 + (income - 1000000) * 0.3;
-}
+  if(income <= 250000){
+    tax = 0;
+  }
+  else if(income <= 500000){
+    tax = (income - 250000)*0.05;
+  }
+  else if(income <= 1000000){
+    tax = 12500 + (income - 500000)*0.2;
+  }
+  else{
+    tax = 112500 + (income - 1000000)*0.3;
+  }
 
-const caCharge = tax * 0.05;
+  let caCharge = tax * 0.05;
 
-document.getElementById("tax").innerText =
-  "₹" + (tax + caCharge);
+  document.getElementById("tax").innerText =
+    "₹"+(tax + caCharge);
+}
 
 // LOGOUT
 function logout(){
@@ -92,17 +84,4 @@ function logout(){
 // AUTO LOAD
 if(location.pathname.includes("dashboard")){
   loadData();
-}
-function downloadPDF(){
-  let content = "Money Report\n\n";
-
-  document.querySelectorAll("#list li").forEach(li=>{
-    content += li.innerText + "\n\n";
-  });
-
-  const blob = new Blob([content], {type: "text/plain"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "report.txt";
-  a.click();
 }
