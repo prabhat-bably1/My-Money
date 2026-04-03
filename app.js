@@ -1,5 +1,7 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
+let chart;
+
 // ADD DATA
 async function addData(){
   const amount = document.getElementById("amount").value;
@@ -14,12 +16,12 @@ async function addData(){
   }
 
   await fetch(API + "/add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
       authorization: localStorage.getItem("token")
     },
-    body: JSON.stringify({ amount, type, category, note, date })
+    body: JSON.stringify({amount,type,category,note,date})
   });
 
   loadData();
@@ -28,9 +30,7 @@ async function addData(){
 // LOAD DATA
 async function loadData(){
   const res = await fetch(API + "/data", {
-    headers:{
-      authorization: localStorage.getItem("token")
-    }
+    headers:{authorization: localStorage.getItem("token")}
   });
 
   const data = await res.json();
@@ -50,48 +50,39 @@ async function loadData(){
 
     list.innerHTML += `
       <li>
-        <b>${d.type}</b> ₹${d.amount}<br>
+        ${d.type} - ₹${d.amount}<br>
         ${d.category || "-"}<br>
         ${d.note || "-"}<br>
         ${d.date}
-      </li>
-    `;
+      </li>`;
   });
 
-  // UPDATE UI
   document.getElementById("income").innerText = "₹" + income;
   document.getElementById("expense").innerText = "₹" + expense;
 
   // TAX
   const result = calculateTax(income);
-
   document.getElementById("tax").innerText =
-    "₹" + Math.floor(result.tax + result.caCharge);
+    "₹" + (result.tax + result.caCharge);
+
+  updateChart(income, expense);
 }
 
 // TAX FUNCTION
 function calculateTax(income){
   let tax = 0;
 
-  if(income <= 250000){
-    tax = 0;
-  }
-  else if(income <= 500000){
-    tax = (income - 250000) * 0.05;
-  }
-  else if(income <= 1000000){
-    tax = 12500 + (income - 500000) * 0.2;
-  }
-  else{
-    tax = 112500 + (income - 1000000) * 0.3;
-  }
+  if(income <= 250000) tax = 0;
+  else if(income <= 500000) tax = (income-250000)*0.05;
+  else if(income <= 1000000) tax = 12500 + (income-500000)*0.2;
+  else tax = 112500 + (income-1000000)*0.3;
 
   let caCharge = tax * 0.05;
 
-  return { tax, caCharge };
+  return {tax, caCharge};
 }
 
-// TAX DETAILS
+// TAX DETAILS CLICK
 function showTaxDetails(){
   const box = document.getElementById("taxDetails");
 
@@ -109,7 +100,7 @@ function showTaxDetails(){
   const result = calculateTax(income);
 
   document.getElementById("taxIncome").innerText =
-    "Total Income: ₹" + income;
+    "Income: ₹" + income;
 
   document.getElementById("taxAmount").innerText =
     "Tax: ₹" + result.tax;
@@ -120,37 +111,33 @@ function showTaxDetails(){
   let advice = "";
 
   if(income <= 250000){
-    advice = "No Tax 👍";
-  }
-  else if(income <= 500000){
-    advice = "Use ELSS / LIC";
-  }
-  else{
+    advice = "No tax 👍";
+  } else if(income <= 500000){
+    advice = "Invest in LIC / ELSS";
+  } else if(income <= 1000000){
     advice = "Use 80C, NPS, Insurance";
+  } else {
+    advice = "High tax → Use CA planning";
   }
 
   document.getElementById("taxAdvice").innerText = advice;
 }
 
-// LOGOUT
-function logout(){
-  localStorage.removeItem("token");
-  location.href = "index.html";
-}
+// CHART
+function updateChart(income, expense){
+  const ctx = document.getElementById("chart");
 
-// PDF
-function downloadPDF(){
-  let content = "Money Report\n\n";
+  if(chart) chart.destroy();
 
-  document.querySelectorAll("#list li").forEach(li=>{
-    content += li.innerText + "\n\n";
+  chart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{
+        data: [income, expense]
+      }]
+    }
   });
-
-  const blob = new Blob([content], {type:"text/plain"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "report.txt";
-  a.click();
 }
 
 // AUTO LOAD
