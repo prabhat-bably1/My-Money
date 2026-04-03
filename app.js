@@ -1,87 +1,42 @@
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-// ADD DATA
-async function addData(){
-  const amount = document.getElementById("amount").value;
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const note = document.getElementById("note").value;
-  const date = document.getElementById("date").value;
+// SIGNUP
+async function signup(){
+  const name = document.getElementById("sName").value;
+  const email = document.getElementById("sEmail").value;
+  const password = document.getElementById("sPass").value;
 
-  await fetch(API+"/add",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      authorization:localStorage.getItem("token")
+  const res = await fetch(API + "/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
     },
-    body:JSON.stringify({amount,type,category,note,date})
+    body: JSON.stringify({ name, email, password })
   });
 
-  loadData();
+  const data = await res.json();
+  alert(data.msg || data.error);
 }
 
-// LOAD DATA
-async function loadData(){
-  const res = await fetch(API+"/data",{
-    headers:{authorization:localStorage.getItem("token")}
+// LOGIN
+async function login(){
+  const email = document.getElementById("lEmail").value;
+  const password = document.getElementById("lPass").value;
+
+  const res = await fetch(API + "/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
   });
 
   const data = await res.json();
 
-  let income = 0;
-  let expense = 0;
-
-  list.innerHTML = "";
-
-  data.forEach(d=>{
-    if(d.type === "income"){
-      income += d.amount;   // ✅ FIXED
-    } else {
-      expense += d.amount;  // ✅ FIXED
-    }
-
-    list.innerHTML += `
-    <li>
-      <b>${d.type}</b> ₹${d.amount}<br>
-      ${d.category || "-"}<br>
-      ${d.note || "-"}<br>
-      ${d.date}
-    </li>`;
-  });
-
-  // UI update
-  document.getElementById("income").innerText = "₹"+income;
-  document.getElementById("expense").innerText = "₹"+expense;
-
-  // TAX CALCULATION
-  let tax = 0;
-
-  if(income <= 250000){
-    tax = 0;
+  if(data.token){
+    localStorage.setItem("token", data.token);
+    location.href = "dashboard.html";
+  } else {
+    alert(data.error);
   }
-  else if(income <= 500000){
-    tax = (income - 250000)*0.05;
-  }
-  else if(income <= 1000000){
-    tax = 12500 + (income - 500000)*0.2;
-  }
-  else{
-    tax = 112500 + (income - 1000000)*0.3;
-  }
-
-  let caCharge = tax * 0.05;
-
-  document.getElementById("tax").innerText =
-    "₹"+(tax + caCharge);
-}
-
-// LOGOUT
-function logout(){
-  localStorage.removeItem("token");
-  location.href = "index.html";
-}
-
-// AUTO LOAD
-if(location.pathname.includes("dashboard")){
-  loadData();
 }
