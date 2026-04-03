@@ -108,3 +108,23 @@ button{
   border: none;
   color: white;
 }
+.top-cards{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+}
+
+.green{
+  background: #1b5e20;
+  cursor: pointer;
+}
+
+.red{
+  background: #b71c1c;
+  cursor: pointer;
+}
+
+.yellow{
+  background: #f9a825;
+  cursor: pointer;
+}
