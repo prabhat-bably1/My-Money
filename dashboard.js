@@ -44,11 +44,6 @@ async function loadData(){
   expenseEl.innerText="₹"+expense;
   document.getElementById("balance").innerText="₹"+(income-expense);
 
-  const tax = income*0.1;
-  const ca = tax*0.05;
-
-  taxEl.innerText="₹"+(tax+ca);
-
   showData(allData);
   drawChart(income,expense);
 }
