@@ -1,93 +1,88 @@
-let data = JSON.parse(localStorage.getItem("data")) || [];
+const API = "https://my-money-backend-dq7n.onrender.com";
 
-function addData() {
-  const item = {
-    amount: Number(amount.value),
-    type: type.value,
-    date: date.value
-  };
+const incomeEl = document.getElementById("income");
+const expenseEl = document.getElementById("expense");
+const taxEl = document.getElementById("tax");
+const list = document.getElementById("list");
 
-  data.push(item);
-  localStorage.setItem("data", JSON.stringify(data));
+let allData = [];
+let chart;
 
-  showData(data);
-  updateSummary();
-  drawChart();
+async function addData(){
+  await fetch(API+"/add",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      authorization:localStorage.getItem("token")
+    },
+    body:JSON.stringify({
+      amount:amount.value,
+      type:type.value,
+      category:category.value,
+      note:note.value,
+      date:date.value
+    })
+  });
+
+  loadData();
 }
 
-function showData(arr) {
-  list.innerHTML = "";
-  arr.forEach(d => {
-    list.innerHTML += `<li>${d.type} ₹${d.amount} (${d.date})</li>`;
+async function loadData(){
+  const res = await fetch(API+"/data",{
+    headers:{authorization:localStorage.getItem("token")}
+  });
+
+  allData = await res.json();
+
+  let income=0, expense=0;
+
+  allData.forEach(d=>{
+    d.type==="income"?income+=d.amount:expense+=d.amount;
+  });
+
+  incomeEl.innerText="₹"+income;
+  expenseEl.innerText="₹"+expense;
+  document.getElementById("balance").innerText="₹"+(income-expense);
+
+  const tax = income*0.1;
+  const ca = tax*0.05;
+
+  taxEl.innerText="₹"+(tax+ca);
+
+  showData(allData);
+  drawChart(income,expense);
+}
+
+function showData(arr){
+  list.innerHTML="";
+  arr.forEach(d=>{
+    list.innerHTML+=`<li>${d.type} ₹${d.amount}</li>`;
   });
 }
 
-function filterData() {
-  const f = filterDate.value;
-  const filtered = data.filter(d => d.date === f);
-  showData(filtered);
+function filterData(type){
+  showData(allData.filter(d=>d.type===type));
 }
 
-function updateSummary() {
-  let incomeTotal = 0;
-  let expenseTotal = 0;
-
-  data.forEach(d => {
-    if (d.type === "income") incomeTotal += d.amount;
-    else expenseTotal += d.amount;
-  });
-
-  const tax = incomeTotal * 0.1;
-
-  document.getElementById("income").innerText = "₹" + incomeTotal;
-  document.getElementById("expense").innerText = "₹" + expenseTotal;
-  document.getElementById("tax").innerText = "₹" + tax;
+function showTaxDetails(){
+  document.getElementById("taxDetails").style.display="block";
 }
 
-// 📊 Chart
-function drawChart() {
-  const incomeCount = data.filter(d => d.type === "income").length;
-  const expenseCount = data.filter(d => d.type === "expense").length;
+function drawChart(income,expense){
+  if(chart) chart.destroy();
 
-  new Chart(document.getElementById("chart"), {
-    type: "doughnut",
-    data: {
-      labels: ["Income", "Expense"],
-      datasets: [{
-        data: [incomeCount, expenseCount]
-      }]
+  chart = new Chart(chart,{
+    type:"pie",
+    data:{
+      labels:["Income","Expense"],
+      datasets:[{data:[income,expense]}]
     }
   });
 }
 
-// 📄 PDF
-function downloadPDF() {
-  let text = "MoneyFlow Report\n\n";
-
-  data.forEach(d => {
-    text += `${d.type} ₹${d.amount} (${d.date})\n`;
-  });
-
-  const blob = new Blob([text], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "report.txt";
-  a.click();
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
 }
 
-// 🔐 NAVIGATION
-function logout() {
-  localStorage.removeItem("login");
-  location.href = "index.html";
-}
-
-function goProfile() {
-  location.href = "profile.html";
-}
-
-// LOAD
-window.onload = () => {
-  showData(data);
-  updateSummary();
-  drawChart();
-};
+loadData();
