@@ -1,52 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MoneyFlow</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MyMoney Pro</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI';
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .top-cards {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .card {
+      flex: 1;
+      padding: 15px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .green { background: rgba(0,255,150,0.2); }
+    .red { background: rgba(255,0,100,0.2); }
+    .yellow { background: rgba(255,200,0,0.2); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      padding: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #00c853;
+      color: white;
+      font-weight: bold;
+    }
+
+    ul {
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    canvas {
+      background: white;
+      border-radius: 10px;
+    }
+
+    #taxDetails {
+      display: none;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>MoneyFlow 💰</h1>
+<h1>💰 MyMoney Pro</h1>
 
-  <h2>Login</h2>
+<div class="top-cards">
+  <div class="card green" onclick="filterData('income')">
+    <h3>Income</h3>
+    <p id="income">₹0</p>
+  </div>
 
-<input id="email" placeholder="Email">
-<input id="password" placeholder="Password">
+  <div class="card red" onclick="filterData('expense')">
+    <h3>Expense</h3>
+    <p id="expense">₹0</p>
+  </div>
 
-<button onclick="login()">Login</button>
-<button onclick="signup()">Signup</button>
+  <div class="card yellow" onclick="showTaxDetails()">
+    <h3>Tax</h3>
+    <p id="tax">₹0</p>
+  </div>
+</div>
 
-<script>
-const API = "https://your-backend-url";
+<div class="grid">
 
-async function signup() {
-  await fetch(API + "/signup", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      email: email.value,
-      password: password.value
-    })
-  });
-  alert("Signup done");
-}
+  <div class="card">
+    <h3>Add Entry</h3>
+    <input id="amount" placeholder="Amount">
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+    <input id="category" placeholder="Category">
+    <input id="note" placeholder="Note">
+    <input id="date" type="date">
+    <button onclick="addData()">Add</button>
+  </div>
 
-async function login() {
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      email: email.value,
-      password: password.value
-    })
-  });
+  <div class="card">
+    <h3>History</h3>
+    <ul id="list"></ul>
+  </div>
 
-  const data = await res.json();
-  localStorage.setItem("token", data.token);
+  <div id="taxDetails">
+    <h3>Tax Details</h3>
+    <p id="taxIncome"></p>
+    <p id="taxAmount"></p>
+    <p id="caCharge"></p>
+    <p id="taxAdvice"></p>
+  </div>
 
-  location.href = "dashboard.html";
-}
-</script>
+  <div class="card">
+    <canvas id="chart"></canvas>
+  </div>
+
+  <div class="card">
+    <button onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
