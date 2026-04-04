@@ -9,21 +9,44 @@
 <div class="container">
   <h1>MoneyFlow 💰</h1>
 
-  <!-- SIGNUP -->
-  <input type="text" id="sName" placeholder="Name">
-  <input type="email" id="sEmail" placeholder="Signup Email">
-  <input type="password" id="sPass" placeholder="Password">
-  <button onclick="signup()">Signup</button>
+  <h2>Login</h2>
 
-  <hr>
+<input id="email" placeholder="Email">
+<input id="password" placeholder="Password">
 
-  <!-- LOGIN -->
-  <input type="email" id="lEmail" placeholder="Login Email">
-  <input type="password" id="lPass" placeholder="Password">
-  <button onclick="login()">Login</button>
+<button onclick="login()">Login</button>
+<button onclick="signup()">Signup</button>
 
-</div>
+<script>
+const API = "https://your-backend-url";
 
-<script src="app.js"></script>
+async function signup() {
+  await fetch(API + "/signup", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+  alert("Signup done");
+}
+
+async function login() {
+  const res = await fetch(API + "/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
+
+  location.href = "dashboard.html";
+}
+</script>
 </body>
 </html>
