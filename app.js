@@ -1,185 +1,94 @@
-const API = "https://my-money-backend-dq7n.onrender.com";
+let data = JSON.parse(localStorage.getItem("data")) || [];
 
-let allData = [];
+function addData() {
+  const amount = Number(amountEl.value);
+  const type = typeEl.value;
+  const category = categoryEl.value;
+  const note = noteEl.value;
+  const date = dateEl.value;
 
-let chart;
+  if (!amount || !date) return alert("Fill all fields");
 
-// ADD DATA
-async function addData(){
-  const amount = document.getElementById("amount").value;
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const note = document.getElementById("note").value;
-  const date = document.getElementById("date").value;
+  data.push({ amount, type, category, note, date });
+  localStorage.setItem("data", JSON.stringify(data));
 
-  if(!amount || !date){
-    alert("Enter amount & date");
-    return;
-  }
-
-  await fetch(API + "/add", {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      authorization: localStorage.getItem("token")
-    },
-    body: JSON.stringify({amount,type,category,note,date})
-  });
-
-  loadData();
+  updateUI();
 }
 
-// LOAD DATA
-async function loadData(){
-  const res = await fetch(API + "/data", {
-    headers:{authorization: localStorage.getItem("token")}
-  });
+const amountEl = document.getElementById("amount");
+const typeEl = document.getElementById("type");
+const categoryEl = document.getElementById("category");
+const noteEl = document.getElementById("note");
+const dateEl = document.getElementById("date");
 
-  const data = await res.json();
-  allData = data;
-
-  let income = 0;
-  let expense = 0;
-
-  data.forEach(d=>{
-    if(d.type === "income") income += Number(d.amount);
-    else expense += Number(d.amount);
-  });
-
-  document.getElementById("income").innerText = "₹" + income;
-  document.getElementById("expense").innerText = "₹" + expense;
-
-  const result = calculateTax(income);
-  document.getElementById("tax").innerText =
-    "₹" + (result.tax + result.caCharge);
-
-  renderList(data);
+function updateUI() {
+  showData(data);
+  updateSummary();
+  drawChart();
 }
-// SHOW LIST
-function renderList(data){
-  const list = document.getElementById("list");
+
+function showData(arr) {
   list.innerHTML = "";
-
-  data.forEach(d=>{
-    list.innerHTML += `
-      <li>
-        <b>${d.type}</b> ₹${d.amount}<br>
-        ${d.category || "-"}<br>
-        ${d.note || "-"}<br>
-        ${d.date}
-      </li>
-    `;
+  arr.forEach(d => {
+    list.innerHTML += `<li><b>${d.type}</b> ₹${d.amount}<br>${d.date}</li>`;
   });
 }
 
-// FILTER
-function filterData(type){
-  const filtered = allData.filter(d => d.type === type);
-  renderList(filtered);
+function filterData(type) {
+  showData(data.filter(d => d.type === type));
 }
 
+function updateSummary() {
+  let income = 0, expense = 0;
 
-  // TAX
-  const result = calculateTax(income);
-  document.getElementById("tax").innerText =
-    "₹" + (result.tax + result.caCharge);
+  data.forEach(d => {
+    d.type === "income" ? income += d.amount : expense += d.amount;
+  });
 
-  updateChart(income, expense);
+  incomeEl.innerText = "₹" + income;
+  expenseEl.innerText = "₹" + expense;
+
+  const taxData = calculateTax(income);
+  taxEl.innerText = "₹" + (taxData.tax + taxData.caCharge);
 }
 
-// TAX FUNCTION
-function calculateTax(income){
-  let tax = 0;
-
-  if(income <= 250000) tax = 0;
-  else if(income <= 500000) tax = (income-250000)*0.05;
-  else if(income <= 1000000) tax = 12500 + (income-500000)*0.2;
-  else tax = 112500 + (income-1000000)*0.3;
-
+function calculateTax(income) {
+  let tax = income * 0.1;
   let caCharge = tax * 0.05;
-
-  return {tax, caCharge};
+  return { tax, caCharge };
 }
 
-// TAX DETAILS CLICK
-function showTaxDetails(){
-  const box = document.getElementById("taxDetails");
+function showTaxDetails() {
+  const income = Number(incomeEl.innerText.replace("₹",""));
+  const t = calculateTax(income);
 
-  if(box.style.display === "none"){
-    box.style.display = "block";
-  } else {
-    box.style.display = "none";
-    return;
-  }
+  taxIncome.innerText = "Income: ₹" + income;
+  taxAmount.innerText = "Tax: ₹" + t.tax;
+  caCharge.innerText = "CA Charge: ₹" + t.caCharge;
 
-  const income = Number(
-    document.getElementById("income").innerText.replace("₹","")
-  );
+  taxAdvice.innerText = income > 500000
+    ? "Use NPS / ELSS to save tax"
+    : "Low tax 👍";
 
-  const result = calculateTax(income);
-
-  document.getElementById("taxIncome").innerText =
-    "Income: ₹" + income;
-
-  document.getElementById("taxAmount").innerText =
-    "Tax: ₹" + result.tax;
-
-  document.getElementById("caCharge").innerText =
-    "CA Charge: ₹" + result.caCharge;
-
-  let advice = "";
-
-  if(income <= 250000){
-    advice = "No tax 👍";
-  } else if(income <= 500000){
-    advice = "Invest in LIC / ELSS";
-  } else if(income <= 1000000){
-    advice = "Use 80C, NPS, Insurance";
-  } else {
-    advice = "High tax → Use CA planning";
-  }
-
-  document.getElementById("taxAdvice").innerText = advice;
+  taxDetails.style.display = "block";
 }
 
-// CHART
-function updateChart(income, expense){
-  const ctx = document.getElementById("chart");
+function drawChart() {
+  const inc = data.filter(d=>d.type==="income").length;
+  const exp = data.filter(d=>d.type==="expense").length;
 
-  if(chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "pie",
+  new Chart(chart, {
+    type: "doughnut",
     data: {
-      labels: ["Income", "Expense"],
-      datasets: [{
-        data: [income, expense]
-      }]
+      labels: ["Income","Expense"],
+      datasets: [{ data: [inc,exp] }]
     }
   });
 }
 
-// AUTO LOAD
-if(location.pathname.includes("dashboard")){
-  loadData();
-}
-function renderList(data){
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
-  data.forEach(d=>{
-    list.innerHTML += `
-      <li>
-        <b>${d.type}</b> ₹${d.amount}<br>
-        ${d.category || "-"}<br>
-        ${d.note || "-"}<br>
-        ${d.date}
-      </li>
-    `;
-  });
+function logout() {
+  localStorage.clear();
+  location.reload();
 }
 
-function filterData(type){
-  const filtered = allData.filter(d => d.type === type);
-  renderList(filtered);
-}
+window.onload = updateUI;
