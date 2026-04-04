@@ -1,138 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MyMoney Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-    }
+<style>
+body{margin:0;font-family:sans-serif;background:linear-gradient(135deg,#0f2027,#2c5364);color:white}
+h1{text-align:center}
 
-    h1 {
-      text-align: center;
-      padding: 15px;
-    }
+.top{display:flex;gap:10px;padding:10px}
+.card{flex:1;padding:15px;border-radius:15px;text-align:center;cursor:pointer}
+.green{background:#00c853}
+.red{background:#d50000}
+.yellow{background:#ffab00}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      padding: 15px;
-    }
+input,select,button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:10px}
+button{background:#00c853;color:white}
 
-    .card {
-      background: rgba(255,255,255,0.08);
-      padding: 15px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-    }
-
-    .big {
-      font-size: 22px;
-      margin-top: 10px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #00c853;
-      border: none;
-      color: white;
-      border-radius: 10px;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    ul {
-      max-height: 150px;
-      overflow: auto;
-    }
-
-    canvas {
-      background: white;
-      border-radius: 10px;
-      padding: 10px;
-    }
-  </style>
+.container{padding:10px}
+ul{max-height:150px;overflow:auto}
+canvas{background:white;border-radius:10px}
+</style>
 </head>
 
 <body>
 
-<h1>💰 MyMoney Dashboard</h1>
+<h1>💰 MyMoney Pro</h1>
+<h2 style="text-align:center">Balance: <span id="balance">₹0</span></h2>
 
-<div class="top-cards">
-
+<div class="top">
   <div class="card green" onclick="filterData('income')">
-    <h3>Income</h3>
-    <p id="income">₹0</p>
+    Income <p id="income">₹0</p>
   </div>
-
   <div class="card red" onclick="filterData('expense')">
-    <h3>Expense</h3>
-    <p id="expense">₹0</p>
+    Expense <p id="expense">₹0</p>
   </div>
-
   <div class="card yellow" onclick="showTaxDetails()">
-    <h3>Tax</h3>
-    <p id="tax">₹0</p>
-  </div>
-
-</div>
-
-<div class="grid">
-
-  <div class="card">
-    Add Entry
-    <input id="amount" placeholder="Amount">
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
-    <input id="category" placeholder="Category">
-    <input id="note" placeholder="Note">
-    <input id="date" type="date">
-    <button onclick="addData()">Add</button>
-  </div>
-
-  <div class="card">
-    History
-    <ul id="list"></ul>
-  </div>
-
-  <div class="card">
-    <canvas id="chart"></canvas>
-  </div>
-
-  <div class="card">
-    <button onclick="logout()">Logout</button>
-  </div>
-
-</div>
-
-<!-- TAX DETAILS -->
-<div id="taxDetails" style="display:none; padding:15px;">
-  <div class="card">
-    <h3>Tax Details</h3>
-    <p id="taxIncome"></p>
-    <p id="taxAmount"></p>
-    <p id="caCharge"></p>
-    <p id="taxAdvice"></p>
+    Tax <p id="tax">₹0</p>
   </div>
 </div>
 
-<script src="app.js"></script>
+<div class="container">
+
+<input id="amount" placeholder="Amount">
+<select id="type">
+  <option value="income">Income</option>
+  <option value="expense">Expense</option>
+</select>
+<input id="category" placeholder="Category">
+<input id="note" placeholder="Note">
+<input id="date" type="date">
+
+<button onclick="addData()">Add</button>
+
+<h3>History</h3>
+<ul id="list"></ul>
+
+<div id="taxDetails" style="display:none">
+<p id="taxIncome"></p>
+<p id="taxAmount"></p>
+<p id="caCharge"></p>
+<p id="taxAdvice"></p>
+</div>
+
+<canvas id="chart"></canvas>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+<script src="dashboard.js"></script>
 
 </body>
 </html>
