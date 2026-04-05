@@ -63,13 +63,23 @@ canvas{background:white;border-radius:10px}
 <p id="taxAdvice"></p>
 </div>
 
-<canvas id="chart"></canvas>
-
 <button onclick="logout()">Logout</button>
 
 </div>
 
 <script src="dashboard.js"></script>
+
+  <h3 style="text-align:center; margin-top:20px;">Analytics</h3>
+
+<canvas id="chart" style="
+    width:100%;
+    max-width:350px;
+    margin:20px auto;
+    display:block;
+    background:rgba(255,255,255,0.05);
+    padding:10px;
+    border-radius:10px;
+"></canvas>
 
   <!-- TAX DETAILS PANEL -->
 <div id="taxDetails" style="display:none; padding:15px; margin:15px; background:rgba(255,255,255,0.1); border-radius:12px;">
