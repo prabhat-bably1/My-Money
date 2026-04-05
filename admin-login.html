@@ -53,23 +53,26 @@ button{
 <script>
 const API = "https://my-money-backend-dq7n.onrender.com";
 
-async function login(){
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
+async function login() {
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
 
-    const res = await fetch(API+"/admin-login",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:u,password:p})
-    });
+  const res = await fetch(API + "/admin-login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username: u, password: p })
+  });
 
-    if(res.ok){
-        const data = await res.json();
-        localStorage.setItem("adminToken", data.token);
-        location.href="admin.html";
-    } else {
-        alert("Login Failed");
-    }
+  const data = await res.json();
+
+  if (res.ok) {
+    localStorage.setItem("adminToken", data.token);
+    location.href = "admin.html";
+  } else {
+    alert(data.msg);
+  }
 }
 </script>
 
