@@ -5,3 +5,121 @@ if(localStorage.getItem("admin") !== "true"){
     location.href="admin-login.html";
 }
 </script>
+<body>
+
+<div style="padding:15px; display:flex; justify-content:space-between;">
+    <h2>🔥 Admin Dashboard</h2>
+    <button onclick="logout()" style="background:#00c853;border:none;padding:8px 15px;border-radius:8px;color:white;">Logout</button>
+</div>
+
+<div style="display:flex; gap:10px; padding:10px; flex-wrap:wrap;">
+
+    <div class="card">
+        <h3>Users</h3>
+        <p id="users">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Transactions</h3>
+        <p id="tx">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Total Amount</h3>
+        <p id="amount">₹0</p>
+    </div>
+
+</div>
+
+<div style="padding:10px;">
+    <input placeholder="Search">
+    <select>
+        <option>All</option>
+        <option>Income</option>
+        <option>Expense</option>
+    </select>
+    <button>Apply</button>
+</div>
+
+<div style="padding:10px;">
+    <button onclick="loadUsers()">Load Users</button>
+    <button onclick="loadTx()">Load Transactions</button>
+    <button onclick="deleteAll()" style="background:red;">Delete All</button>
+    <button onclick="exportCSV()">Export CSV</button>
+</div>
+
+<div id="data" style="padding:10px;"></div>
+
+<style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#0f172a;
+    color:white;
+}
+.card{
+    flex:1;
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+}
+button{
+    padding:8px 12px;
+    margin:5px;
+    border:none;
+    border-radius:8px;
+    background:#00c853;
+    color:white;
+}
+input,select{
+    padding:8px;
+    border-radius:8px;
+    border:none;
+}
+</style>
+
+<script>
+const API = "https://your-backend-url"; // change
+
+async function loadUsers(){
+    const res = await fetch(API+"/users");
+    const data = await res.json();
+    document.getElementById("users").innerText = data.length;
+}
+
+async function loadTx(){
+    const res = await fetch(API+"/data");
+    const data = await res.json();
+
+    document.getElementById("tx").innerText = data.length;
+
+    let total=0;
+    data.forEach(d=>{
+        if(d.type==="income") total+=d.amount;
+        else total-=d.amount;
+    });
+
+    document.getElementById("amount").innerText = "₹"+total;
+
+    document.getElementById("data").innerHTML =
+        data.map(d=>`<p>${d.type} ₹${d.amount}</p>`).join("");
+}
+
+async function deleteAll(){
+    await fetch(API+"/deleteAll",{method:"DELETE"});
+    alert("Deleted");
+    loadTx();
+}
+
+function exportCSV(){
+    alert("CSV feature next upgrade 😉");
+}
+
+function logout(){
+    localStorage.removeItem("admin");
+    location.href="admin-login.html";
+}
+</script>
+
+</body>
