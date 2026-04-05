@@ -63,16 +63,32 @@ function showTaxDetails(){
   document.getElementById("taxDetails").style.display="block";
 }
 
-function drawChart(income,expense){
-  if(chart) chart.destroy();
+let chart;
 
-  chart = new Chart(chart,{
-    type:"pie",
-    data:{
-      labels:["Income","Expense"],
-      datasets:[{data:[income,expense]}]
-    }
-  });
+function drawChart(income, expense){
+    const ctx = document.getElementById("chart");
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: ["Income", "Expense"],
+            datasets: [{
+                data: [income, expense],
+                backgroundColor: ["#00ff88", "#ff4444"]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#fff"
+                    }
+                }
+            }
+        }
+    });
 }
 
 function logout(){
