@@ -80,46 +80,96 @@ input,select{
 </style>
 
 <script>
-const API = "https://your-backend-url"; // change
+const API = "https://my-money-backend-dq7n.onrender.com";
+const token = localStorage.getItem("adminToken");
 
-async function loadUsers(){
-    const res = await fetch(API+"/users");
-    const data = await res.json();
-    document.getElementById("users").innerText = data.length;
-}
+if(!token) location.href="admin-login.html";
 
-async function loadTx(){
-    const res = await fetch(API+"/data");
-    const data = await res.json();
+// 🔐 Headers
+const headers = {
+    "authorization": token
+};
 
+async function loadAll(){
+    const res1 = await fetch(API+"/users",{headers});
+    const users = await res1.json();
+
+    const res2 = await fetch(API+"/data",{headers});
+    const data = await res2.json();
+
+    document.getElementById("users").innerText = users.length;
     document.getElementById("tx").innerText = data.length;
 
-    let total=0;
+    let total=0, income=0, expense=0;
+
     data.forEach(d=>{
-        if(d.type==="income") total+=d.amount;
-        else total-=d.amount;
+        if(d.type==="income"){
+            total+=d.amount;
+            income+=d.amount;
+        } else {
+            total-=d.amount;
+            expense+=d.amount;
+        }
     });
 
     document.getElementById("amount").innerText = "₹"+total;
+
+    drawChart(income, expense);
 
     document.getElementById("data").innerHTML =
         data.map(d=>`<p>${d.type} ₹${d.amount}</p>`).join("");
 }
 
+// 📊 Chart
+let chart;
+function drawChart(income, expense){
+    const ctx = document.getElementById("chart");
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:["Income","Expense"],
+            datasets:[{
+                data:[income,expense],
+                backgroundColor:["green","red"]
+            }]
+        }
+    });
+}
+
+// ❌ Delete
 async function deleteAll(){
-    await fetch(API+"/deleteAll",{method:"DELETE"});
-    alert("Deleted");
-    loadTx();
+    await fetch(API+"/deleteAll",{method:"DELETE",headers});
+    loadAll();
 }
 
+// 📄 Export CSV
 function exportCSV(){
-    alert("CSV feature next upgrade 😉");
+    let rows = [["Type","Amount"]];
+    document.querySelectorAll("#data p").forEach(p=>{
+        let t = p.innerText.split(" ");
+        rows.push([t[0],t[1]]);
+    });
+
+    let csv = rows.map(r=>r.join(",")).join("\n");
+
+    let blob = new Blob([csv], {type:"text/csv"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data.csv";
+    a.click();
 }
 
+// 🚪 Logout
 function logout(){
-    localStorage.removeItem("admin");
+    localStorage.removeItem("adminToken");
     location.href="admin-login.html";
 }
+
+loadAll();
 </script>
+
 
 </body>
