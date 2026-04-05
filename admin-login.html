@@ -51,16 +51,24 @@ button{
 </div>
 
 <script>
-function login(){
+const API = "https://my-money-backend-dq7n.onrender.com";
+
+async function login(){
     const u = document.getElementById("user").value;
     const p = document.getElementById("pass").value;
 
-    // simple auth (later DB se connect karenge)
-    if(u==="admin" && p==="1234"){
-        localStorage.setItem("admin","true");
+    const res = await fetch(API+"/admin-login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:u,password:p})
+    });
+
+    if(res.ok){
+        const data = await res.json();
+        localStorage.setItem("adminToken", data.token);
         location.href="admin.html";
     } else {
-        alert("Invalid Login");
+        alert("Login Failed");
     }
 }
 </script>
