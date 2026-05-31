@@ -1,23 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Money Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-body{font-family:sans-serif;background:#0f2027;color:white;text-align:center;padding:50px}
-input{display:block;margin:10px auto;padding:10px;width:80%}
-button{padding:10px;width:80%;background:green;color:white;border:none}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(-45deg,#0f172a,#1e293b,#0ea5e9,#22c55e);
+background-size:400% 400%;
+animation:bg 12s ease infinite;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.login-box{
+width:350px;
+padding:35px;
+border-radius:20px;
+backdrop-filter:blur(15px);
+background:rgba(255,255,255,0.12);
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 8px 32px rgba(0,0,0,.2);
+color:white;
+animation:fade 1s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(30px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.logo{
+text-align:center;
+font-size:32px;
+font-weight:700;
+margin-bottom:5px;
+}
+
+.tagline{
+text-align:center;
+font-size:13px;
+opacity:.8;
+margin-bottom:25px;
+}
+
+.input-group{
+margin-bottom:15px;
+}
+
+.input-group input{
+width:100%;
+padding:12px;
+border:none;
+outline:none;
+border-radius:10px;
+background:rgba(255,255,255,.15);
+color:white;
+}
+
+.input-group input::placeholder{
+color:#ddd;
+}
+
+.options{
+display:flex;
+justify-content:space-between;
+font-size:13px;
+margin-bottom:20px;
+}
+
+.options a{
+color:#fff;
+text-decoration:none;
+}
+
+.login-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
+
+.login-btn:hover{
+transform:translateY(-3px);
+background:#16a34a;
+}
+
+.show-pass{
+cursor:pointer;
+font-size:13px;
+margin-top:5px;
+display:inline-block;
+}
 </style>
 </head>
 <body>
 
-<h2>MyMoney Login</h2>
+<div class="login-box">
 
-<input id="email" placeholder="Email">
-<input id="password" placeholder="Password">
+<div class="logo">💰 My Money</div>
+<div class="tagline">Manage Your Finance Smartly</div>
 
-<button onclick="login()">Login</button>
-<button onclick="signup()">Signup</button>
+<div class="input-group">
+<input type="text" placeholder="Username">
+</div>
 
-<script src="app.js"></script>
+<div class="input-group">
+<input type="password" id="pass" placeholder="Password">
+<span class="show-pass" onclick="togglePass()">👁 Show Password</span>
+</div>
+
+<div class="options">
+<label><input type="checkbox"> Remember Me</label>
+<a href="#">Forgot Password?</a>
+</div>
+
+<button class="login-btn">LOGIN NOW</button>
+
+</div>
+
+<script>
+function togglePass(){
+const pass=document.getElementById("pass");
+pass.type=pass.type==="password"?"text":"password";
+}
+</script>
+
 </body>
 </html>
